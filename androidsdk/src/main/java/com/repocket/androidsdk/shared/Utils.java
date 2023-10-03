@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.gson.Gson;
 import com.repocket.androidsdk.types.Types;
 
 import java.net.NetworkInterface;
@@ -32,8 +33,12 @@ public class Utils {
 
     // Define a constant for the permission request code
     private static final int INTERNET_PERMISSION_REQUEST_CODE = 1;
+    private static Gson gson = new Gson();
 
-    public static void checkAndroidPermissions(Activity activity) {
+
+    public static void checkAndroidPermissions() {
+        // TODO: Remove activity usage or provide a reference
+        Activity activity = new Activity();
         // Check if the app has the INTERNET permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             int permissionStatus = ContextCompat.checkSelfPermission(activity, Manifest.permission.INTERNET);
@@ -234,5 +239,9 @@ public class Utils {
         }
 
         return dictionary;
+    }
+
+    public static <T> T fromJson(String json, Class<T> classOfT) {
+        return gson.fromJson(json, classOfT);
     }
 }

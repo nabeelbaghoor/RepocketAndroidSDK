@@ -1,18 +1,18 @@
 package com.repocket.androidsdk.classes;
 
 import static com.repocket.androidsdk.services.Services.MonitorApiService;
-
 import android.util.Log;
-
-import com.android.volley.Response;
-import com.android.volley.toolbox.HttpResponse;
 import com.repocket.androidsdk.shared.Utils;
 import com.repocket.androidsdk.types.Types;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
+
+import okhttp3.Response;
 
 public class PeerMonitor {
 
@@ -24,9 +24,8 @@ public class PeerMonitor {
     private String peerId;
     private int second = 7;
     private String userId;
-
     public void init(String peerId, String userId, String configVersionToken) {
-        Log.d("PeerMonitor", "onInit");
+        Log.d("RepocketSDK", "onInit");
         this.peerId = peerId;
         this.userId = userId;
         this.configVersionToken = configVersionToken;
@@ -51,16 +50,16 @@ public class PeerMonitor {
             isRunning = false;
             interval.cancel();
             interval = null;
-            Log.d("PeerMonitor", "Monitor Stopped.");
+            Log.d("RepocketSDK", "Monitor Stopped.");
         }
     }
 
     private void monitorHandler(Runnable onPeerDeactivate, Runnable onCredentialsMissing, Runnable onPeerActive) {
-        Log.d("PeerMonitor", "peer monitor is running " + userId + " / " + peerId);
+        Log.d("RepocketSDK", "peer monitor is running " + userId + " / " + peerId);
 
         String token = Utils.getToken();
         if (token == null || token.isEmpty()) {
-            Log.d("PeerMonitor", "User credentials missing, disconnecting");
+            Log.d("RepocketSDK", "User credentials missing, disconnecting");
             onCredentialsMissing.run();
             return;
         }
@@ -71,9 +70,9 @@ public class PeerMonitor {
                 url += "/" + configVersionToken;
             }
 
-            HttpResponse response = MonitorApiService.Get(url, null).join();
-            if (response != null && response.getStatusCode() == 200 && response != null) {
-                String json = response.getContent().
+            Response response = MonitorApiService.Get(url, null);
+            if (response != null && response.code() == 200) {
+                String json = response.body().string();
                 Types.PeerMonitorApiResponse peerMonitor = Utils.fromJson(json, Types.PeerMonitorApiResponse.class);
 
                 isPeerActive = peerMonitor.data.active && !peerMonitor.data.isConfigurationUpdated;
@@ -89,7 +88,9 @@ public class PeerMonitor {
                 stop();
             }
         } catch (IOException error) {
-            Log.e("PeerMonitor", "Peer monitor error: " + error.getMessage());
+            Log.e("RepocketSDK", "Peer monitor error: " + error.getMessage());
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -3,17 +3,17 @@ package com.repocket.androidsdk;
 import android.os.StrictMode;
 import android.util.Log;
 
-//import com.repocket.androidsdk.services.HttpService;
-//import com.repocket.androidsdk.services.Services;
-import com.android.volley.toolbox.HttpResponse;
-import com.repocket.androidsdk.services.HttpService;
+import com.google.gson.Gson;
 import com.repocket.androidsdk.services.Services;
+import com.repocket.androidsdk.shared.DockerUtils;
 import com.repocket.androidsdk.shared.MyPlayerPrefs;
 import com.repocket.androidsdk.types.Types;
 
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+import org.json.JSONException;
+
+import java.io.IOException;
+
+import okhttp3.Response;
 
 public class RepocketSDK {
 
@@ -26,21 +26,19 @@ public class RepocketSDK {
         MyPlayerPrefs.SetString("sdk-api-key", sdkApiKey);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        CompletableFuture<HttpResponse> peerConfigFuture = Services.PeerManagerApiService.Get("peer/config", null);
-        peerConfigFuture.thenAccept(peerConfig -> {
-            if (peerConfig != null) {
-                // Process the peerConfig here
-                Log.d("RepocketSDK", "Received Peer Config: " + peerConfig.getStatusCode());
-            } {
-                Log.d("RepocketSDK", "GetPeerConfig: Failed to get peer config: " + peerConfig.getStatusCode());
-            }
-        });
-
-//        if (response.isSuccessStatusCode()) {
-//            return new Gson().fromJson(responseData, Types.PeerConfigResponse.class);
-//        } else {
-//            Log.d("RepocketSDK", "GetPeerConfig: Failed to get peer config: " + peerConfigFuture.);
-//            return null;
+        DockerUtils.Initialize();
+//        try {
+//            Response response = Services.PeerManagerApiService.Get("peer/config", null);
+//            String responseData = response.body().string();
+//            Gson gson = new Gson();
+//            if (response.isSuccessful()) {
+//                Types.PeerConfigResponse peerConfig = gson.fromJson(responseData, Types.PeerConfigResponse.class);
+//                Log.d("RepocketSDK", "Received Peer Config: " + peerConfig.data.config_version_token);
+//            }
+//        } catch (JSONException e) {
+//            throw new RuntimeException(e);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
 //        }
     }
 

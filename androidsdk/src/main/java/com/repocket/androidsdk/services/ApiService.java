@@ -1,11 +1,13 @@
 package com.repocket.androidsdk.services;
 
-//import com.android.volley.toolbox.HttpResponse;
-import com.android.volley.toolbox.HttpResponse;
 import com.repocket.androidsdk.shared.Global;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
+
+import okhttp3.Response;
 
 public class ApiService {
     private final String _baseApi;
@@ -18,19 +20,19 @@ public class ApiService {
         _httpService = new HttpService();
     }
 
-    public CompletableFuture<HttpResponse> Get(String endpoint, Map<String, Object> parameters) {
+    public Response Get(String endpoint, Map<String, Object> parameters) throws JSONException, IOException {
         return _httpService.GetAsync(_baseApi + endpoint, parameters);
     }
 
-    public CompletableFuture<HttpResponse> Post(String endpoint, Map<String, Object> payload) {
+    public Response Post(String endpoint, Map<String, Object> payload) throws JSONException, IOException {
         return _httpService.PostAsync(_baseApi + endpoint, payload);
     }
 
-    public CompletableFuture<HttpResponse> Put(String endpoint, Map<String, Object> payload) {
+    public Response Put(String endpoint, Map<String, Object> payload) throws JSONException, IOException {
         return _httpService.PutAsync(_baseApi + endpoint, payload);
     }
 
-    public CompletableFuture<HttpResponse> Delete(String endpoint, Map<String, Object> data) {
+    public Response Delete(String endpoint, Map<String, Object> data) throws JSONException, IOException {
         return _httpService.DeleteAsync(_baseApi + endpoint, data);
     }
 }

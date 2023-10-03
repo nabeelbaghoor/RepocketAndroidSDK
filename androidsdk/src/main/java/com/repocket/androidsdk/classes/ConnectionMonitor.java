@@ -16,7 +16,7 @@ public class ConnectionMonitor {
     private int duration = 60000;
 
     public void init() {
-        Log.d("ConnectionMonitor", "onInit");
+        Log.d("RepocketSDK", "onInit");
     }
 
     public void start(final Runnable onConnectionDeactivate, final Runnable onConnectionActive) {
