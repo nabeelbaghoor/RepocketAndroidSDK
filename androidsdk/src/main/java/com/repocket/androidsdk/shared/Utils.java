@@ -71,7 +71,9 @@ public class Utils {
         return String.format("%08x%08x", h2, h1);
     }
 
-    public static CompletableFuture<Types.DeviceInfo> getDeviceInfo(Context context) {
+    public static CompletableFuture<Types.DeviceInfo> getDeviceInfo() {
+        // TODO: Remove context usage or provide a reference
+        Context context = null;
         return CompletableFuture.supplyAsync(() -> {
             Types.RuntimeInfo runtimeInfo = getRuntimeInfo();
 

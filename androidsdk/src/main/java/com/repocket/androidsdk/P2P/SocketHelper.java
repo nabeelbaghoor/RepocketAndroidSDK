@@ -1,4 +1,4 @@
-package com.repocket.androidsdk.socks5;
+package com.repocket.androidsdk.P2P;
 
 import java.io.IOException;
 import java.net.Socket;

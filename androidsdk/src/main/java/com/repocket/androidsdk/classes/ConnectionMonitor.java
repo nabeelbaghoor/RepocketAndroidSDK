@@ -14,6 +14,9 @@ public class ConnectionMonitor {
     private boolean isRunning;
     private Timer timer;
     private int duration = 60000;
+    public void setDuration(int _duration){
+        duration = _duration;
+    }
 
     public void init() {
         Log.d("RepocketSDK", "onInit");

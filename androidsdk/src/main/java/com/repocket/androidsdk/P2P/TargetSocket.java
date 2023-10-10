@@ -1,10 +1,8 @@
-package com.repocket.androidsdk.socks5;
+package com.repocket.androidsdk.P2P;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class TargetSocket {
