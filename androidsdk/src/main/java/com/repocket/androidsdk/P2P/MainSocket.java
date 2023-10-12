@@ -4,15 +4,12 @@ import android.util.Log;
 
 import com.repocket.androidsdk.services.PeerSocketEvents;
 import com.repocket.androidsdk.shared.Debouncer;
+import com.repocket.androidsdk.shared.EventHandler;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Random;
 
 public class RPSocket extends Socket {
@@ -42,6 +39,9 @@ public class MainSocket {
     private boolean _isReconnecting;
     private boolean _onConnectionEstablishedEventFired;
     private boolean _peerCloseWithError;
+    private final EventHandler<Exception> SocketConnectionFailed = new EventHandler<>();
+    private final EventHandler<String> ConnectionEstablished = new EventHandler<>();
+    private final EventHandler SocketConnectionClose = new EventHandler<>();
 
     public MainSocket(int port, String ip, String peerId, String token, String userId, int socketReqHandlerPort) {
         _ip = ip;
@@ -67,7 +67,8 @@ public class MainSocket {
             _mainSocket.connect(new InetSocketAddress(_ip, _port));
             return true;
         } catch (IOException ex) {
-            Log.d("Main socket connect error", ex.getMessage());
+            Log.d("RepocketSDK", "Main socket connect error:" + ex.getMessage());
+            SocketConnectionFailed.broadcast(ex);
             return false;
         }
     }
@@ -75,7 +76,7 @@ public class MainSocket {
     private void EnableKeepAlive(Socket socket) {
         try {
             socket.setKeepAlive(true);
-        } catch (SocketException ex) {
+        } catch (IOException ex) {
             Log.e("Failed to enable keep-alive", ex.getMessage());
         }
     }
@@ -88,7 +89,7 @@ public class MainSocket {
         } catch (IOException ex) {
             Log.d("MainSocket -> error", ex.getMessage());
             _peerCloseWithError = true;
-            // Handle socket connection failed event
+            SocketConnectionFailed.broadcast(ex);
         }
     }
 
@@ -115,24 +116,24 @@ public class MainSocket {
             }
         } catch (IOException ex) {
             Log.d("Main socket receive error", ex.getMessage());
-            // Handle socket connection failed event
+            SocketConnectionFailed.broadcast(ex);
         }
     }
 
     private void OnClose() {
-        Log.d("doneHandler");
+        Log.d("RepocketSDK", "doneHandler");
 
         if (!_peerCloseWithError) {
-            Log.d("main socket try to re connect " + _peerId);
-            _resetConnectionDebouncer.Call();
+            Log.d("RepocketSDK","main socket try to re connect " + _peerId);
+            _resetConnectionDebouncer.call();
         } else {
-            Log.d("main socket dont renew connection cause of error");
+            Log.d("RepocketSDK","main socket don't renew connection cause of error");
             try {
                 _mainSocket.close();
             } catch (IOException ex) {
-                Log.e("Main socket close error", ex.getMessage());
+                Log.e("RepocketSDK","Main socket close error:" + ex.getMessage());
             }
-            // Handle socket connection close event
+            SocketConnectionClose.broadcast(null);
         }
     }
 
@@ -145,7 +146,7 @@ public class MainSocket {
         boolean isConnCompletedPacket = reqAsStr.equals(PeerSocketEvents.ConnectionCompleted);
 
         if (isAuthPacket) {
-            Log.d("P2PS-MainSocket -> Authentication");
+            Log.d("RepocketSDK","P2PS-MainSocket -> Authentication");
             byte[] authData = ("authentication " + _token + " " + _userId + " " + _peerId).getBytes(StandardCharsets.UTF_8);
             // Send authData via _mainSocket's output stream
             return;
@@ -153,26 +154,26 @@ public class MainSocket {
 
         if (isConnCompletedPacket) {
             if (_onConnectionEstablishedEventFired) return;
-            // Fire ConnectionEstablished event
+            ConnectionEstablished.broadcast(_peerId);
             _onConnectionEstablishedEventFired = true;
             return;
         }
 
         if (isPingPacket) {
-            Log.d("MainSocket -> PING");
+            Log.d("RepocketSDK","MainSocket -> PING");
             byte[] pongData = PeerSocketEvents.Pong.getBytes(StandardCharsets.UTF_8);
             // Send pongData via _mainSocket's output stream
             return;
         }
 
         if (isAuthFailedPacket) {
-            Log.d("MainSocket -> Authentication Failed");
+            Log.d("RepocketSDK","MainSocket -> Authentication Failed");
             OnMainSocketCloseWithError();
             return;
         }
 
         String[] requests = reqAsStr.split("reqId:");
-        Log.d("req: " + requests[0]);
+        Log.d("RepocketSDK","req: " + requests[0]);
 
         if (requests != null && requests.length > 0) {
             for (String reqId : requests) {
@@ -186,18 +187,22 @@ public class MainSocket {
         RequestHandlerSocket reqHandlerSocket = new RequestHandlerSocket(_ip,
                 _socketReqHandlerPort != 0 ? _socketReqHandlerPort : 7072,
                 reqId, _peerId);
-        reqHandlerSocket.SocketConnectionFailed += (sender, s) -> {
+        reqHandlerSocket.SocketConnectionFailed.addListener((Exception ex) -> {
             byte[] connectionFailedData = (PeerSocketEvents.SocketHandlerConnectionFailed + ":" + reqId).getBytes(StandardCharsets.UTF_8);
             // Send connectionFailedData via _mainSocket's output stream
-        };
+        });
 
-        reqHandlerSocket.TargetWebsiteError += (sender, s) -> {
+        reqHandlerSocket.TargetWebsiteError.addListener((String s) -> {
             byte[] websiteErrorData = (PeerSocketEvents.TargetWebsiteError + ":" + reqId).getBytes(StandardCharsets.UTF_8);
-            Log.d("MainSocket -> websiteErrorData:", Arrays.toString(websiteErrorData));
+            Log.d("RepocketSDK","MainSocket -> websiteErrorData:", new String(websiteErrorData, StandardCharsets.UTF_8));
             // Send websiteErrorData via _mainSocket's output stream
-        };
+        });
 
-        reqHandlerSocket.Connect();
+        try {
+            reqHandlerSocket.connect();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void OnMainSocketCloseWithError() {
@@ -215,7 +220,7 @@ public class MainSocket {
             try {
                 _isReconnecting = true;
                 _mainSocket.connect(new InetSocketAddress(_ip, _port));
-                Log.d("Main socket reconnected");
+                Log.d("RepocketSDK","Main socket reconnected");
                 _mainSocket.IsBusy = false;
                 _mainSocket.RetryConnectionCounter--;
                 _isReconnecting = false;
@@ -225,168 +230,14 @@ public class MainSocket {
                 OnMainSocketCloseWithError();
             }
         } else {
-            Log.d("Main socket don't renew connection");
+            Log.d("RepocketSDK","Main socket don't renew connection");
             OnMainSocketCloseWithError();
-            // Handle socket connection close event
+            SocketConnectionClose.broadcast(null);
         }
     }
 
     public void End() {
-        Log.d("Main socket destroy");
+        Log.d("RepocketSDK","Main socket destroy");
         OnMainSocketCloseWithError();
     }
-
-    public void setKeepAlive(Socket socket) {
-        try {
-            socket.setKeepAlive(true);
-        } catch (Exception ex) {
-            Log.e("MainSocket", "Failed to enable keep-alive: " + ex.getMessage());
-        }
-    }
-
-    public void setTcpNoDelay(Socket socket) {
-        try {
-            socket.setKeepAlive(true);
-        } catch (Exception ex) {
-            Log.e("MainSocket", "Failed to set tcp no delay: " + ex.getMessage());
-        }
-    }
 }
-
-
-//
-//import android.util.Log;
-//
-//import com.repocket.androidsdk.shared.Debouncer;
-//import com.repocket.androidsdk.shared.EventHandler;
-//
-//import java.io.IOException;
-//import java.net.InetSocketAddress;
-//import java.net.Socket;
-//import java.util.Random;
-//import java.util.concurrent.ExecutorService;
-//import java.util.concurrent.Executors;
-//import java.util.function.Consumer;
-//
-//class RPSocket extends Socket {
-//    public boolean isBusy;
-//    public int retryConnectionCounter;
-//    public String type;
-//    public int uid;
-//
-//    public RPSocket() throws IOException {
-//        super();
-//        this.setTcpNoDelay(true);
-//    }
-//}
-//
-//public class MainSocket {
-//    private final int port;
-//    private final int socketReqHandlerPort;
-//    private final String ip;
-//    private final String peerId;
-//    private final String token;
-//    private final String userId;
-//    private static final int MaxSocketRetries = 10; // try to reconnect for 1 minute
-//    private RPSocket mainSocket;
-//    private final byte[] buffer;
-//    private final Debouncer resetConnectionDebouncer;
-//    private boolean isReconnecting;
-//    private boolean onConnectionEstablishedEventFired;
-//    private boolean peerCloseWithError;
-//    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-//
-//    private EventHandler eventHandler;
-//
-//    public interface DebouncerCallback {
-//        void onDebounced();
-//    }
-//
-//    public MainSocket(int port, String ip, String peerId, String token, String userId, int socketReqHandlerPort) {
-//        this.ip = ip;
-//        this.port = port;
-//        this.socketReqHandlerPort = socketReqHandlerPort;
-//        this.peerId = peerId;
-//        this.token = token;
-//        this.userId = userId;
-//
-//        this.buffer = new byte[1024];
-//        this.resetConnectionDebouncer = new Debouncer(this::resetConnectionTimerElapsed, 500);
-//        eventHandler = new EventHandler();
-//    }
-//
-//    public void removeAllListeners() {
-//        eventHandler.removeAllListeners();
-//    }
-//
-//    public void connect(final Consumer<Boolean> callback) {
-//        executorService.submit(() -> {
-//            try {
-//                mainSocket = new RPSocket();
-//                mainSocket.retryConnectionCounter = 0;
-//                mainSocket.type = "main";
-//                mainSocket.uid = new Random().nextInt();
-//                mainSocket.isBusy = false;
-//                setKeepAlive(mainSocket);
-//                mainSocket.connect(new InetSocketAddress(ip, port));
-//                callback.accept(true);
-//            } catch (Exception ex) {
-//                Log.e("MainSocket", "Connect error: " + ex.getMessage());
-//                callback.accept(false);
-//            }
-//        });
-//    }
-//
-//    private void resetConnectionTimerElapsed() {
-//        executorService.submit(() -> {
-//            if (isReconnecting) {
-//                return;
-//            }
-//
-//            if (mainSocket.retryConnectionCounter < MaxSocketRetries) {
-//                setKeepAlive(mainSocket);
-//                setTcpNoDelay(mainSocket);
-//                mainSocket.retryConnectionCounter++;
-//                Log.d("MainSocket", "Before reconnect: " + ip);
-//
-//                try {
-//                    isReconnecting = true;
-//                    mainSocket.connect(new InetSocketAddress(ip, port));
-//                    Log.d("MainSocket", "Reconnected");
-//                    mainSocket.isBusy = false;
-//                    mainSocket.retryConnectionCounter--;
-//                    isReconnecting = false;
-//                    peerCloseWithError = false;
-//                } catch (Exception ex) {
-//                    Log.e("MainSocket", "Reconnect error: " + ex.getMessage());
-//                    onMainSocketCloseWithError();
-//                }
-//            } else {
-//                Log.d("MainSocket", "Don't renew connection");
-//                onMainSocketCloseWithError();
-//            }
-//        });
-//    }
-//
-//    public void end() {
-//        Log.d("MainSocket", "Destroying main socket");
-//        onMainSocketCloseWithError();
-//        executorService.shutdown();
-//    }
-//
-//    public void setKeepAlive(Socket socket) {
-//        try {
-//            socket.setKeepAlive(true);
-//        } catch (Exception ex) {
-//            Log.e("MainSocket", "Failed to enable keep-alive: " + ex.getMessage());
-//        }
-//    }
-//
-//    public void setTcpNoDelay(Socket socket) {
-//        try {
-//            socket.setKeepAlive(true);
-//        } catch (Exception ex) {
-//            Log.e("MainSocket", "Failed to set tcp no delay: " + ex.getMessage());
-//        }
-//    }
-//}
