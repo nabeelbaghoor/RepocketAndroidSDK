@@ -1,26 +1,8 @@
 package com.repocket.androidsdk;
 
-import android.os.StrictMode;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.repocket.androidsdk.services.Services;
-import com.repocket.androidsdk.shared.DockerUtils;
-import com.repocket.androidsdk.shared.MyPlayerPrefs;
-import com.repocket.androidsdk.shared.eventHandling.Event;
-import com.repocket.androidsdk.shared.eventHandling.MyEvent;
-import com.repocket.androidsdk.shared.eventHandling.MyEventArgs;
-import com.repocket.androidsdk.shared.eventHandling.MyEventHandler;
-import com.repocket.androidsdk.shared.eventHandling.MyEventListener;
-import com.repocket.androidsdk.shared.eventHandling.MyListener;
-import com.repocket.androidsdk.types.Types;
-
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.util.EventListener;
-
-import okhttp3.Response;
+import com.repocket.androidsdk.shared.EventHandler;
 
 public class RepocketSDK {
 
@@ -30,22 +12,15 @@ public class RepocketSDK {
     {
         Log.d("RepocketSDK", "RepocketSDK -> Initialize");
         // <Try>
-//        MyEvent myEvent = new MyEvent();
-//        myEvent.addListener(message -> Log.d("RepocketSDK" , "RepocketSDK -> Initialize -> listener added"));
-////        myEvent.removeAllListeners();
-//        myEvent.invoke();
+        EventHandler eventHandler = new EventHandler();
+        eventHandler.addListener(message -> Log.d("RepocketSDK" , "RepocketSDK1 -> Initialize -> listener added: " + message));
+        eventHandler.addListener(message -> Log.d("RepocketSDK" , "RepocketSDK2 -> Initialize -> listener added: " + message));
+        eventHandler.addListener(message -> Log.d("RepocketSDK" , "RepocketSDK3 -> Initialize -> listener added: " + message));
+        eventHandler.broadcast("error");
+        eventHandler.broadcast("error2");
+        eventHandler.removeAllListeners();
+        eventHandler.broadcast("error3");
 
-        Event event = new Event();
-        event.addListener(message -> Log.d("RepocketSDK" , "RepocketSDK -> Initialize -> listener added"));
-        event.addListener(message -> Log.d("RepocketSDK" , "RepocketSDK2 -> Initialize -> listener added"));
-        java.util.function.Consumer<MyEventArgs> a = event.addListener(message -> Log.d("RepocketSDK" , "RepocketSDK3 -> Initialize -> listener added"));
-        a.andThen(b->{
-            Log.d("RepocketSDK", b.toString());
-        });
-//        event.broadcast(new MyEventArgs());
-        event.broadcast(message -> {
-            Log.d("RepocketSDK", "RepocketSDK -> chal gya");
-        });
         // </Try>
 
 
