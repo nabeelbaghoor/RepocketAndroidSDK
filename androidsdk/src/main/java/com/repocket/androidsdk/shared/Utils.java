@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Log;
 
@@ -14,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import com.google.gson.Gson;
 import com.repocket.androidsdk.types.Types;
 
+import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.HashMap;
@@ -120,6 +123,8 @@ public class Utils {
     }
 
     private static String checkConnectivityType() {
+
+
         // TODO: Remove context usage or provide a reference
         Context context = null;
         // Use Android-specific code to determine connectivity type
@@ -172,30 +177,50 @@ public class Utils {
 
     private static String getMacAddress() {
         try {
-            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface nif : all) {
-                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
+            InetAddress localhost = InetAddress.getLocalHost();
+            NetworkInterface networkInterface = NetworkInterface.getByInetAddress(localhost);
 
-                byte[] macBytes = nif.getHardwareAddress();
-                if (macBytes == null) {
-                    return "";
+            byte[] macAddressBytes = networkInterface.getHardwareAddress();
+            if (macAddressBytes != null) {
+                StringBuilder macAddress = new StringBuilder();
+                for (byte b : macAddressBytes) {
+                    macAddress.append(String.format("%02X", b));
                 }
-
-                StringBuilder res1 = new StringBuilder();
-                for (byte b : macBytes) {
-                    // res1.append(Integer.toHexString(b & 0xFF) + ":");
-                    res1.append(String.format("%02X:",b));
-                }
-
-                if (res1.length() > 0) {
-                    res1.deleteCharAt(res1.length() - 1);
-                }
-                return res1.toString();
+                return macAddress.toString();
+            } else {
+                System.out.println("MAC Address not found for the specified network interface.");
             }
-        } catch (Exception ex) {
-            //handle exception
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return "";
+
+
+//        try {
+//            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+//            for (NetworkInterface nif : all) {
+//                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
+//
+//                byte[] macBytes = nif.getHardwareAddress();
+//                if (macBytes == null) {
+//                    return "";
+//                }
+//
+//                StringBuilder res1 = new StringBuilder();
+//                for (byte b : macBytes) {
+//                    // res1.append(Integer.toHexString(b & 0xFF) + ":");
+//                    res1.append(String.format("%02X:",b));
+//                }
+//
+//                if (res1.length() > 0) {
+//                    res1.deleteCharAt(res1.length() - 1);
+//                }
+//                return res1.toString();
+//            }
+//        } catch (Exception ex) {
+//            //handle exception
+//        }
+//        return "";
     }
 
     public static Types.RuntimeInfo getRuntimeInfo() {
