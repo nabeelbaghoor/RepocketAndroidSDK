@@ -50,11 +50,11 @@ public class TargetSocket {
                     onConnectedWait();
                     socket.getOutputStream().write(receivedBuffer);
                 } catch (Exception e) {
-                    Log.d("RepocketSDK","targetSocket.Send error: " + e);
+                    Log.d("RepocketSDK","TargetSocket -> connect -> targetSocket.Send error: " + e);
                 }
             }
         } catch (Exception e) {
-            Log.d("RepocketSDK","Error connecting to target socket: " + e);
+            Log.d("RepocketSDK","TargetSocket -> connect -> Error connecting to target socket: " + e);
         }
     }
 
@@ -67,7 +67,7 @@ public class TargetSocket {
             onConnected();
             socket.getInputStream().read(buffer);
         } catch (IOException e) {
-            Log.d("RepocketSDK","Error connecting to target socket: " + e);
+            Log.d("RepocketSDK","TargetSocket -> onConnect -> Error connecting to target socket: " + e);
         }
     }
 
@@ -88,7 +88,7 @@ public class TargetSocket {
     }
 
     public void close() {
-        Log.d("RepocketSDK","TargetSocket -> onSocketCloseEvent");
+        Log.d("RepocketSDK","TargetSocket -> close: onSocketCloseEvent");
         try {
             socket.close();
             // The requestHandlerSocket should already be closed, but we verify it here
@@ -108,7 +108,7 @@ public class TargetSocket {
     private void onReceive() {
         try {
             int bytesRead = socket.getInputStream().read(buffer);
-            Log.d("RepocketSDK","TargetSocket -> bytesRead: " + bytesRead);
+            Log.d("RepocketSDK","TargetSocket -> onReceive: bytesRead: " + bytesRead);
             if (bytesRead > 0) {
                 byte[] receivedData = new byte[bytesRead];
                 System.arraycopy(buffer, 0, receivedData, 0, bytesRead);
@@ -123,7 +123,7 @@ public class TargetSocket {
     }
 
     private void onError(Exception error) {
-        Log.d("RepocketSDK","Error receiving data from target socket: " + error);
+        Log.d("RepocketSDK","TargetSocket -> onError -> Error receiving data from target socket: " + error);
         targetWebsiteError.broadcast(error);
         try {
             socket.close();

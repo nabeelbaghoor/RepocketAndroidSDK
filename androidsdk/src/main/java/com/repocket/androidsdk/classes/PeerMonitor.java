@@ -25,7 +25,7 @@ public class PeerMonitor {
     private int second = 7;
     private String userId;
     public void init(String peerId, String userId, String configVersionToken) {
-        Log.d("RepocketSDK", "onInit");
+        Log.d("RepocketSDK", "PeerMonitor -> init");
         this.peerId = peerId;
         this.userId = userId;
         this.configVersionToken = configVersionToken;
@@ -50,7 +50,7 @@ public class PeerMonitor {
             isRunning = false;
             interval.cancel();
             interval = null;
-            Log.d("RepocketSDK", "Monitor Stopped.");
+            Log.d("RepocketSDK", "PeerMonitor -> stop: Monitor Stopped.");
         }
     }
 

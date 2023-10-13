@@ -15,14 +15,14 @@ public class TestP2PService {
                 7072
         );
 
-        p2P.ConnectionEstablished.addListener(x -> Log.d("RepocketSDK","onConnectionEstablished"));
-        p2P.SocketConnectionFailed.addListener(x -> Log.d("RepocketSDK","onSocketConnectionFailed"));
-        p2P.BeforeStartSocketConnection.addListener(x -> Log.d("RepocketSDK","onBeforeStartSocketConnection"));
-        p2P.ServerCloseSocketConnection.addListener(x -> Log.d("RepocketSDK","onServerCloseSocketConnection"));
-        p2P.SocketConnectionClose.addListener(x -> Log.d("RepocketSDK","onSocketConnectionClose"));
-        p2P.ConnectionToServerFailed.addListener(x -> Log.d("RepocketSDK","onConnectionToServerFailed"));
-        p2P.ReceiveData.addListener(x -> Log.d("RepocketSDK","onReceiveData"));
-        p2P.SocketClose.addListener(x -> Log.d("RepocketSDK","onSocketClose"));
+        p2P.ConnectionEstablished.addListener(x -> Log.d("RepocketSDK","TestP2PService -> Init -> onConnectionEstablished"));
+        p2P.SocketConnectionFailed.addListener(x -> Log.d("RepocketSDK","TestP2PService -> Init -> onSocketConnectionFailed"));
+        p2P.BeforeStartSocketConnection.addListener(x -> Log.d("RepocketSDK","TestP2PService -> Init -> onBeforeStartSocketConnection"));
+        p2P.ServerCloseSocketConnection.addListener(x -> Log.d("RepocketSDK","TestP2PService -> Init -> onServerCloseSocketConnection"));
+        p2P.SocketConnectionClose.addListener(x -> Log.d("RepocketSDK","TestP2PService -> Init -> onSocketConnectionClose"));
+        p2P.ConnectionToServerFailed.addListener(x -> Log.d("RepocketSDK","TestP2PService -> Init -> onConnectionToServerFailed"));
+        p2P.ReceiveData.addListener(x -> Log.d("RepocketSDK","TestP2PService -> Init -> onReceiveData"));
+        p2P.SocketClose.addListener(x -> Log.d("RepocketSDK","TestP2PService -> Init -> onSocketClose"));
 
         p2P.startSocketConnection();
     }

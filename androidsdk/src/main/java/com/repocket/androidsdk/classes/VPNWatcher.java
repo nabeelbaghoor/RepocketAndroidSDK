@@ -19,7 +19,7 @@ public class VPNWatcher {
     private String userId;
 
     public void init(String peerId, String userId) {
-        System.out.println("VPNWatcher -> onInit");
+        Log.d("RepocketSDK","VPNWatcher -> init");
         this.peerId = peerId;
         this.userId = userId;
     }

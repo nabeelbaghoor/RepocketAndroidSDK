@@ -54,7 +54,7 @@ public class MainSocket {
             _mainSocket.connect(new InetSocketAddress(_ip, _port));
             return true;
         } catch (IOException ex) {
-            Log.d("RepocketSDK", "Main socket connect error:" + ex.getMessage());
+            Log.d("RepocketSDK", "MainSocket -> Connect: Main socket connect error:" + ex.getMessage());
             SocketConnectionFailed.broadcast(ex);
             return false;
         }
@@ -64,7 +64,7 @@ public class MainSocket {
         try {
             socket.setKeepAlive(true);
         } catch (IOException ex) {
-            Log.e("Failed to enable keep-alive", ex.getMessage());
+            Log.d("RepocketSDK","MainSocket -> EnableKeepAlive: Failed to enable keep-alive: " + ex.getMessage());
         }
     }
 
@@ -74,7 +74,7 @@ public class MainSocket {
             _mainSocket.getInputStream().read(_buffer, 0, _buffer.length);
             // Handle the read data
         } catch (IOException ex) {
-            Log.d("RepocketSDK","MainSocket -> error: "+ ex.getMessage());
+            Log.d("RepocketSDK","MainSocket -> ConnectCallback -> error: "+ ex.getMessage());
             _peerCloseWithError = true;
             SocketConnectionFailed.broadcast(ex);
         }
@@ -92,33 +92,33 @@ public class MainSocket {
                 try {
                     HandleRead(receivedBytes);
                 } catch (Exception e) {
-                    Log.d("RepocketSDK","MainSocket -> HandleRead -> e:"+ e.getMessage());
+                    Log.d("RepocketSDK","MainSocket -> ReceiveCallback -> e:"+ e.getMessage());
                     throw e;
                 }
 
                 _mainSocket.getInputStream().read(_buffer, 0, _buffer.length);
             } else {
-                Log.d("RepocketSDK:","MainSocket -> close");
+                Log.d("RepocketSDK:","MainSocket -> ReceiveCallback -> close");
                 OnClose();
             }
         } catch (IOException ex) {
-            Log.d("RepocketSDK","Main socket receive error: "+ex.getMessage());
+            Log.d("RepocketSDK","MainSocket -> ReceiveCallback: Main socket receive error: "+ex.getMessage());
             SocketConnectionFailed.broadcast(ex);
         }
     }
 
     private void OnClose() {
-        Log.d("RepocketSDK", "doneHandler");
+        Log.d("RepocketSDK", "MainSocket -> OnClose: doneHandler");
 
         if (!_peerCloseWithError) {
-            Log.d("RepocketSDK","main socket try to re connect " + _peerId);
+            Log.d("RepocketSDK","MainSocket -> OnClose: main socket try to re connect " + _peerId);
             _resetConnectionDebouncer.call();
         } else {
-            Log.d("RepocketSDK","main socket don't renew connection cause of error");
+            Log.d("RepocketSDK","MainSocket -> OnClose: main socket don't renew connection cause of error");
             try {
                 _mainSocket.close();
             } catch (IOException ex) {
-                Log.e("RepocketSDK","Main socket close error:" + ex.getMessage());
+                Log.e("RepocketSDK","MainSocket -> OnClose: Main socket close error:" + ex.getMessage());
             }
             SocketConnectionClose.broadcast(null);
         }
@@ -133,7 +133,7 @@ public class MainSocket {
         boolean isConnCompletedPacket = reqAsStr.equals(PeerSocketEvents.ConnectionCompleted);
 
         if (isAuthPacket) {
-            Log.d("RepocketSDK","P2PS-MainSocket -> Authentication");
+            Log.d("RepocketSDK","MainSocket -> HandleRead: Authentication");
             byte[] authData = ("authentication " + _token + " " + _userId + " " + _peerId).getBytes(StandardCharsets.UTF_8);
             // Send authData via _mainSocket's output stream
             return;
@@ -147,20 +147,20 @@ public class MainSocket {
         }
 
         if (isPingPacket) {
-            Log.d("RepocketSDK","MainSocket -> PING");
+            Log.d("RepocketSDK","MainSocket -> HandleRead: PING");
             byte[] pongData = PeerSocketEvents.Pong.getBytes(StandardCharsets.UTF_8);
             // Send pongData via _mainSocket's output stream
             return;
         }
 
         if (isAuthFailedPacket) {
-            Log.d("RepocketSDK","MainSocket -> Authentication Failed");
+            Log.d("RepocketSDK","MainSocket -> HandleRead: Authentication Failed");
             OnMainSocketCloseWithError();
             return;
         }
 
         String[] requests = reqAsStr.split("reqId:");
-        Log.d("RepocketSDK","req: " + requests[0]);
+        Log.d("RepocketSDK","MainSocket -> HandleRead -> req: " + requests[0]);
 
         if (requests != null && requests.length > 0) {
             for (String reqId : requests) {
@@ -181,7 +181,7 @@ public class MainSocket {
 
         reqHandlerSocket.TargetWebsiteError.addListener((String s) -> {
             byte[] websiteErrorData = (PeerSocketEvents.TargetWebsiteError + ":" + reqId).getBytes(StandardCharsets.UTF_8);
-            Log.d("RepocketSDK","MainSocket -> websiteErrorData:");
+            Log.d("RepocketSDK","MainSocket -> InitRequestSocketHandler: websiteErrorData:" + websiteErrorData.toString());
             // Send websiteErrorData via _mainSocket's output stream
         });
 
@@ -193,7 +193,7 @@ public class MainSocket {
         try {
             _mainSocket.close();
         } catch (IOException ex) {
-            Log.d("RepocketSDK","Main socket close error: " + ex.getMessage());
+            Log.d("RepocketSDK","MainSocket -> OnMainSocketCloseWithError: Main socket close error: " + ex.getMessage());
         }
     }
 
@@ -203,24 +203,24 @@ public class MainSocket {
             try {
                 _isReconnecting = true;
                 _mainSocket.connect(new InetSocketAddress(_ip, _port));
-                Log.d("RepocketSDK","Main socket reconnected");
+                Log.d("RepocketSDK","MainSocket -> ResetConnectionTimer_Elapsed: Main socket reconnected");
                 _mainSocket.IsBusy = false;
                 _mainSocket.RetryConnectionCounter--;
                 _isReconnecting = false;
                 _peerCloseWithError = false;
             } catch (IOException ex) {
-                Log.d("RepocketSDK","Main socket reconnect error: " + ex.getMessage());
+                Log.d("RepocketSDK","MainSocket -> ResetConnectionTimer_Elapsed: Main socket reconnect error: " + ex.getMessage());
                 OnMainSocketCloseWithError();
             }
         } else {
-            Log.d("RepocketSDK","Main socket don't renew connection");
+            Log.d("RepocketSDK","MainSocket -> ResetConnectionTimer_Elapsed: Main socket don't renew connection");
             OnMainSocketCloseWithError();
             SocketConnectionClose.broadcast(null);
         }
     }
 
     public void End() {
-        Log.d("RepocketSDK","Main socket destroy");
+        Log.d("RepocketSDK","MainSocket -> End: Main socket destroy");
         OnMainSocketCloseWithError();
     }
 }

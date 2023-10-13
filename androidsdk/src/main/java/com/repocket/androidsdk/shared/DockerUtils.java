@@ -20,10 +20,10 @@ public class DockerUtils {
 
         try {
             ICallResult result = NodeLogIn(email, apiKey);
-            Log.d("RepocketSDK","Peer API Token: " + result.getPeerApiToken());
-            Log.d("RepocketSDK","User ID: " + result.getUserId());
+            Log.d("RepocketSDK","DockerUtils -> Initialize -> Peer API Token: " + result.getPeerApiToken());
+            Log.d("RepocketSDK","DockerUtils -> Initialize -> User ID: " + result.getUserId());
         } catch (Exception ex) {
-            Log.d("RepocketSDK","Error: " + ex.getMessage());
+            Log.d("RepocketSDK","DockerUtils -> Initialize -> Error: " + ex.getMessage());
         }
     }
 

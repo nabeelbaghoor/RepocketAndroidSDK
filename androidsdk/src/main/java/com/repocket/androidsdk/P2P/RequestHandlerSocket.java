@@ -63,12 +63,12 @@ public class RequestHandlerSocket {
         try {
             // Handle socket connection callback
             _socket.connect(new InetSocketAddress(_ip, _port));
-            Log.d("RepocketSDK", "new socket req - " + _reqId);
+            Log.d("RepocketSDK", "RequestHandlerSocket -> ConnectCallback: new socket req - " + _reqId);
             _socket.getInputStream().read(_buffer, 0, _buffer.length);
 //            _socket.BeginReceive(_buffer, 0, _buffer.length, ReceiveCallback, null);
         } catch (IOException ex) {
             // Handle connection error
-            Log.d("RepocketSDK", "ConnectCallback: error when connecting to socket-server: " + ex.getMessage());
+            Log.d("RepocketSDK", "RequestHandlerSocket -> ConnectCallback: error when connecting to socket-server: " + ex.getMessage());
             SocketConnectionFailed.broadcast(ex.getMessage());
             CloseSockets();
         }
@@ -88,12 +88,12 @@ public class RequestHandlerSocket {
                 _socket.getInputStream().read(_buffer, 0, _buffer.length);
             } else {
                 // Handle socket closure
-                Log.d("RepocketSDK", "RequestHandlerSocket -> closed - " + _reqId);
+                Log.d("RepocketSDK", "RequestHandlerSocket -> ReceiveCallback -> closed - " + _reqId);
                 CloseSockets();
             }
         } catch (IOException ex) {
             // Handle receive error
-            Log.d("RepocketSDK", "ReceiveCallback error: " + ex.getMessage());
+            Log.d("RepocketSDK", "RequestHandlerSocket -> ReceiveCallback -> error: " + ex.getMessage());
             CloseSockets();
         }
     }
@@ -124,7 +124,7 @@ public class RequestHandlerSocket {
             try {
                 SocketHelper.writeToSocket(_targetSocket.socket, data);
             } catch (IOException ex) {
-                Log.d("RepocketSDK", "TargetSocket send error: " + ex.getMessage());
+                Log.d("RepocketSDK", "RequestHandlerSocket -> HandleRead -> TargetSocket send error: " + ex.getMessage());
             }
             return;
         } else if (_isSocks5Req) {
@@ -156,7 +156,7 @@ public class RequestHandlerSocket {
             }
         } catch (IOException ex) {
             // Handle close error
-            Log.d("RepocketSDK", "Socket close error: " + ex.getMessage());
+            Log.d("RepocketSDK", "RequestHandlerSocket -> CloseSockets -> Socket close error: " + ex.getMessage());
         }
     }
 
@@ -194,7 +194,7 @@ public class RequestHandlerSocket {
 
             _targetSocket.connect();
         } catch (Exception ex) {
-            Log.d("RepocketSDK", "TargetSocket creation error: " + ex.getMessage());
+            Log.d("RepocketSDK", "RequestHandlerSocket -> HttpProtocolHandler -> TargetSocket creation error: " + ex.getMessage());
         }
     }
 
@@ -238,7 +238,7 @@ public class RequestHandlerSocket {
             return httpRequest;
         } catch (Exception ex) {
             // Handle parse error
-            Log.d("RepocketSDK", "ParseHttpRequest error: " + ex.getMessage());
+            Log.d("RepocketSDK", "RequestHandlerSocket -> ParseHttpRequest -> error: " + ex.getMessage());
             return null;
         }
     }

@@ -63,11 +63,11 @@ public class P2PService {
     }
 
     public boolean startSocketConnection() {
-        Log.d("RepocketSDK","start connection");
+        Log.d("RepocketSDK","P2PService -> startSocketConnection: start connection");
 
         if (retriesConnectionCounter >= MaxRetryPerHour) {
             retriesConnectionCounter = 0;
-            Log.d("RepocketSDK","P2PService -> onConnectionToServerFailed");
+            Log.d("RepocketSDK","P2PService -> startSocketConnection: onConnectionToServerFailed");
             ConnectionToServerFailed.broadcast(null);
             return false;
         }
@@ -96,7 +96,7 @@ public class P2PService {
     }
 
     public void end() {
-        Log.d("RepocketSDK","P2PService -> CLOSE SOCKET CONNECTION");
+        Log.d("RepocketSDK","P2PService -> end: CLOSE SOCKET CONNECTION");
         if (mainSocket != null) {
             mainSocket.End();
         }

@@ -24,7 +24,7 @@ public class TestPeerService {
         try {
             nodeLogIn("adirsimona@gmail.com", "53ecbb9c-deb4-49e9-8819-621d6ecb8aa8");
         } catch (Exception e) {
-            Log.d("RepocketSDK","Error: " + e.getMessage());
+            Log.d("RepocketSDK","TestPeerService -> initialize -> Error: " + e.getMessage());
         }
     }
 
@@ -39,15 +39,15 @@ public class TestPeerService {
                 String token = peerToken.token;
                 String userId = peerToken.user_id;
 
-                Log.d("RepocketSDK","Peer API Token: " + token);
-                Log.d("RepocketSDK","User ID: " + userId);
+                Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> Peer API Token: " + token);
+                Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> User ID: " + userId);
 
                 PeerService peerService = new PeerService(null,token, userId, apiKey);
 
-                peerService.onConnected.addListener(x -> Log.d("RepocketSDK","peer connected"));
-                peerService.onConnecting.addListener(x -> Log.d("RepocketSDK","peer resetting"));
-                peerService.onDisconnected.addListener(x -> Log.d("RepocketSDK","peer disconnected"));
-                peerService.onRefreshTokenRequired.addListener(x -> Log.d("RepocketSDK","peer refresh_token_required"));
+                peerService.onConnected.addListener(x -> Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> peer connected"));
+                peerService.onConnecting.addListener(x -> Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> peer resetting"));
+                peerService.onDisconnected.addListener(x -> Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> peer disconnected"));
+                peerService.onRefreshTokenRequired.addListener(x -> Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> peer refresh_token_required"));
 
                 peerService.createPeer();
             } else {

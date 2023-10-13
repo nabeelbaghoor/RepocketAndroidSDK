@@ -19,7 +19,7 @@ public class ConnectionMonitor {
     }
 
     public void init() {
-        Log.d("RepocketSDK", "onInit");
+        Log.d("RepocketSDK", "ConnectionMonitor -> init");
     }
 
     public void start(final Runnable onConnectionDeactivate, final Runnable onConnectionActive) {
@@ -39,23 +39,23 @@ public class ConnectionMonitor {
         if (isRunning) {
             isRunning = false;
             timer.cancel();
-            Log.d("RepocketSDK", "Monitor Stopped.");
+            Log.d("RepocketSDK", "ConnectionMonitor -> stop: Monitor Stopped.");
         }
     }
 
     private void monitorHandler(Runnable onConnectionDeactivate, Runnable onConnectionActive) {
-        Log.d("ConnectionMonitor", "Connection monitor is running");
+        Log.d("ConnectionMonitor", "ConnectionMonitor -> monitorHandler: Connection monitor is running");
 
         try {
             if (checkConnection()) {
-                Log.d("RepocketSDK", "Internet connection is present");
+                Log.d("RepocketSDK", "ConnectionMonitor -> monitorHandler: Internet connection is present");
                 onConnectionActive.run();
             } else {
-                Log.d("RepocketSDK", "Internet connection is absent");
+                Log.d("RepocketSDK", "ConnectionMonitor -> monitorHandler: Internet connection is absent");
                 onConnectionDeactivate.run();
             }
         } catch (Exception e) {
-            Log.d("RepocketSDK", "Error checking internet connection: " + e.getMessage());
+            Log.d("RepocketSDK", "ConnectionMonitor -> monitorHandler: Error checking internet connection: " + e.getMessage());
         }
     }
 
