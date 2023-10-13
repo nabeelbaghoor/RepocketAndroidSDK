@@ -33,10 +33,10 @@ public class Socket5Handler {
     }
 
     public void handle(byte[] data) throws UnknownHostException {
-        Log.d("Socket5Handler", "Handling SOCKS5 incoming request");
+        Log.d("RepocketSDK","Handling SOCKS5 incoming request");
 
         if (data[0] != 0x05) {
-            Log.d("Socket5Handler", "Unsupported SOCKS version: " + data[0]);
+            Log.d("RepocketSDK", "Unsupported SOCKS version: " + data[0]);
             reply((byte) 0x01);
             closeSocket(reqHandlerSocket);
             return;
@@ -44,21 +44,21 @@ public class Socket5Handler {
 
         switch (data[1]) {
             case 0x01: // CONNECT
-                Log.d("Socket5Handler", "Handling CONNECT");
+                Log.d("RepocketSDK", "Handling CONNECT");
                 handleConnectCommand(data);
                 break;
             case 0x02: // BIND
-                Log.d("Socket5Handler", "BIND METHOD REQUEST not supported");
+                Log.d("RepocketSDK", "BIND METHOD REQUEST not supported");
                 reply((byte) 0x07);
                 closeSocket(reqHandlerSocket);
                 break;
             case 0x03: // UDP ASSOCIATE
-                Log.d("Socket5Handler", "Handling UDP ASSOCIATE");
+                Log.d("RepocketSDK", "Handling UDP ASSOCIATE");
                 reply((byte) 0x00, new InetSocketAddress(0));
                 closeSocket(reqHandlerSocket);
                 break;
             default:
-                Log.d("Socket5Handler", "Unsupported method: " + data[1]);
+                Log.d("RepocketSDK", "Unsupported method: " + data[1]);
                 reply((byte) 0x07);
                 closeSocket(reqHandlerSocket);
                 break;
@@ -67,7 +67,7 @@ public class Socket5Handler {
 
     private void handleConnectCommand(byte[] data) throws UnknownHostException {
         if (data[2] != 0x00) {
-            Log.d("Socket5Handler", "RESERVED should be 0x00");
+            Log.d("RepocketSDK", "RESERVED should be 0x00");
         }
 
         String dstHost;
@@ -88,7 +88,7 @@ public class Socket5Handler {
                     dstPort = ((data[5 + domainLen] & 0xFF) << 8) | (data[5 + domainLen + 1] & 0xFF);
                     createConnection(dstHost, dstPort, 3);
                 } catch (UnknownHostException ex) {
-                    Log.d("Socket5Handler", "Error resolving domain: " + ex.getMessage());
+                    Log.d("RepocketSDK", "Error resolving domain: " + ex.getMessage());
                     reply((byte) 0x04);
                     closeSocket(reqHandlerSocket);
                 }
@@ -100,7 +100,7 @@ public class Socket5Handler {
                 createConnection(dstHost, dstPort, 3);
                 break;
             default:
-                Log.d("Socket5Handler", "ATYP " + data[3] + " not supported");
+                Log.d("RepocketSDK", "ATYP " + data[3] + " not supported");
                 reply((byte) 0x08);
                 closeSocket(reqHandlerSocket);
                 break;
@@ -109,7 +109,7 @@ public class Socket5Handler {
 
     private void createConnection(String dstHost, int dstPort, int retries) {
         if (retries <= 0) {
-            Log.d("Socket5Handler", "Connection retries exceeded");
+            Log.d("RepocketSDK", "Connection retries exceeded");
             reply((byte) 0x05);
             closeSocket(reqHandlerSocket);
             return;
@@ -143,7 +143,7 @@ public class Socket5Handler {
             reqHandlerSocket.getInputStream().read(reqHandlerBuffer);
             reqHandlerSocket.getOutputStream().write(reqHandlerBuffer);
         } catch (IOException e) {
-            Log.d("Socket5Handler", "Failed to connect to " + dstHost + ":" + dstPort + ", retrying (" + (retries - 1) + " attempts left)...");
+            Log.d("RepocketSDK", "Failed to connect to " + dstHost + ":" + dstPort + ", retrying (" + (retries - 1) + " attempts left)...");
             createConnection(dstHost, dstPort, retries - 1);
         }
     }
@@ -169,7 +169,7 @@ public class Socket5Handler {
         try {
             reqHandlerSocket.getOutputStream().write(reply);
         } catch (IOException e) {
-            Log.d("Socket5Handler", "Failed to send reply: " + e.getMessage());
+            Log.d("RepocketSDK", "Failed to send reply: " + e.getMessage());
         }
     }
 
@@ -177,7 +177,7 @@ public class Socket5Handler {
         try {
             socket.close();
         } catch (IOException e) {
-            Log.d("Socket5Handler", "Failed to close socket: " + e.getMessage());
+            Log.d("RepocketSDK", "Failed to close socket: " + e.getMessage());
         }
     }
 

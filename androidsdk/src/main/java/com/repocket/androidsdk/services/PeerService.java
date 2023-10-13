@@ -9,6 +9,7 @@ import com.repocket.androidsdk.classes.ConnectionMonitor;
 import com.repocket.androidsdk.classes.PeerMonitor;
 import com.repocket.androidsdk.classes.VPNWatcher;
 import com.repocket.androidsdk.shared.Debouncer;
+import com.repocket.androidsdk.shared.EventHandler;
 import com.repocket.androidsdk.shared.MyPlayerPrefs;
 import com.repocket.androidsdk.shared.Utils;
 import com.repocket.androidsdk.types.Types;
@@ -17,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,31 +60,24 @@ public class PeerService {
     private P2PService p2PServiceInstance;
     private String peerId;
     private String peerQuality = "Good";
-    private List<Double> responseTimes = List.of(0.6, 1.3, 1.0, 2.0, 5.0, 6.0, 7.0);
+    private List<Double> _responseTimes = new ArrayList<Double>() {{
+        add(0.6);
+        add(1.3);
+        add(1.0);
+        add(2.0);
+        add(5.0);
+        add(6.0);
+        add(7.0);
+    }};
     private boolean shouldResetConnection;
     private Types.TcpServerInfo tcpServerInfo;
     private boolean vpnStatus = false;
     private RemoteSettings _settings;
 
-    public interface ConnectionListener {
-        void onConnected();
-
-        void onDisconnected();
-
-        void onConnecting();
-
-        void onRefreshTokenRequired();
-    }
-
-    private ConnectionListener connectionListener;
-
-    public void setConnectionListener(ConnectionListener listener) {
-        connectionListener = listener;
-    }
-
-    public void removeConnectionListener() {
-        connectionListener = null;
-    }
+    public EventHandler onConnected = new EventHandler();
+    public EventHandler onDisconnected = new EventHandler();
+    public EventHandler onConnecting = new EventHandler();
+    public EventHandler onRefreshTokenRequired = new EventHandler();
 
     public PeerService(String firebaseLoginToken, String peerApiToken, String sdkApiKey, String userId) {
         localId = new Random().nextInt(9000) + 1000;
@@ -179,9 +174,9 @@ public class PeerService {
                 String token = createPeer != null ? createPeer.data.token : null;
                 tcpServerInfo = createPeer != null ? createPeer.data.tcpServerInfo : null;
 
-                Log.d("PeerService", "_tcpServerInfo?.ip: " + (tcpServerInfo != null ? tcpServerInfo.ip : ""));
-                Log.d("PeerService", "_tcpServerInfo?.port: " + (tcpServerInfo != null ? tcpServerInfo.port : ""));
-                Log.d("PeerService", "_tcpServerInfo?.socketReqHandlerPort: " + (tcpServerInfo != null ? tcpServerInfo.socketReqHandlerPort : ""));
+                Log.d("RepocketSDK","_tcpServerInfo?.ip: " + (tcpServerInfo != null ? tcpServerInfo.ip : ""));
+                Log.d("RepocketSDK", "_tcpServerInfo?.port: " + (tcpServerInfo != null ? tcpServerInfo.port : ""));
+                Log.d("RepocketSDK", "_tcpServerInfo?.socketReqHandlerPort: " + (tcpServerInfo != null ? tcpServerInfo.socketReqHandlerPort : ""));
 
                 if (userId == null && createPeer != null) {
                     userId = createPeer.data.userId;
@@ -202,14 +197,12 @@ public class PeerService {
 
                     isCreatingPeer = false;
                 } else {
-                    Log.d("PeerService", "TcpServerInfo is null");
+                    Log.d("RepocketSDK", "TcpServerInfo is null");
                 }
             } else {
-                Log.d("PeerService", "Failed to create connection: HttpStatusCode(" + response.code() + ")");
+                Log.d("RepocketSDK", "Failed to create connection: HttpStatusCode(" + response.code() + ")");
                 if (response.code() == 403) {
-                    if (connectionListener != null) {
-                        connectionListener.onRefreshTokenRequired();
-                    }
+                    onRefreshTokenRequired.broadcast("Failed to create connection: HttpStatusCode(" + response.code() + ")");
                 }
                 isCreatingPeer = false;
             }
@@ -225,7 +218,7 @@ public class PeerService {
         if (response.isSuccessful()) {
             return Utils.fromJson(responseData, Types.PeerConfigResponse.class);
         } else {
-            Log.d("PeerService", "GetPeerConfig: Failed to get peer config: " + responseData);
+            Log.d("RepocketSDK", "GetPeerConfig: Failed to get peer config: " + responseData);
             return null;
         }
     }
@@ -242,11 +235,11 @@ public class PeerService {
             try {
                 return new JSONObject(responseData);
             } catch (JSONException e) {
-                Log.e("PeerService", "Error parsing JSON: " + e.getMessage());
+                Log.d("RepocketSDK","Error parsing JSON: " + e.getMessage());
                 return null;
             }
         } else {
-            Log.d("PeerService", "GetIpInfo: Something went wrong");
+            Log.d("RepocketSDK", "GetIpInfo: Something went wrong");
             return null;
         }
     }
@@ -261,26 +254,28 @@ public class PeerService {
         }
     }
 
+    private void OnSocketConnectionFailedDebounce() {
+        if (!isCreatingPeer && IsConnectivityChanged) {
+            _handleConnectionClosed();
+        }
+    }
+
     private void onReceiveDataDebounce() {
-        Log.d("PeerService", "onSocketConnectionFailed " + isUserActivatedThePeer);
+        Log.d("RepocketSDK", "onSocketConnectionFailed " + isUserActivatedThePeer);
         if (!isPeerActive) {
             isPeerActive = true;
-            if (connectionListener != null) {
-                connectionListener.onConnected();
-            }
+            onConnected.broadcast("onSocketConnectionFailed " + isUserActivatedThePeer);
         }
     }
 
     private void onConnectionToServerFailedDebounce() {
-        Log.d("PeerService", "onConnectionToServerFailed " + isUserActivatedThePeer);
-        if (connectionListener != null) {
-            connectionListener.onDisconnected();
-        }
+        Log.d("RepocketSDK", "onConnectionToServerFailed " + isUserActivatedThePeer);
+        onDisconnected.broadcast("onConnectionToServerFailed " + isUserActivatedThePeer);
         stop(false);
     }
 
     private void onSocketConnectionCloseDebounce() {
-        Log.d("PeerService", "onSocketConnectionClose " + isUserActivatedThePeer);
+        Log.d("RepocketSDK", "onSocketConnectionClose " + isUserActivatedThePeer);
         if (!isCreatingPeer) {
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 _handleConnectionClosed();
@@ -289,49 +284,39 @@ public class PeerService {
     }
 
     private void onConnectionEstablishedDebounce() {
-        Log.d("PeerService", "PeerService(" + localId + ") -> Connection established");
+        Log.d("RepocketSDK", "PeerService(" + localId + ") -> Connection established");
         _markPeerAsAlive(); // TODO: Some part of it needs to be on the main thread?
     }
 
     private void registerEventListeners() {
-        Debouncer onSocketConnectionFailedDebounce = new Debouncer(this::onSocketConnectionFailedDebounce, 1000);
+        Debouncer onSocketConnectionFailedDebounce = new Debouncer(this::OnSocketConnectionFailedDebounce, 1000);
         Debouncer onReceiveDataDebounce = new Debouncer(this::onReceiveDataDebounce, 1000);
         Debouncer onConnectionToServerFailedDebounce = new Debouncer(this::onConnectionToServerFailedDebounce, 1000);
         Debouncer onSocketConnectionCloseDebounce = new Debouncer(this::onSocketConnectionCloseDebounce, 1000);
         Debouncer onConnectionEstablishedDebounce = new Debouncer(this::onConnectionEstablishedDebounce, 1000);
 
-        p2PServiceInstance.setBeforeStartSocketConnection((_, _) -> {
-            if (connectionListener != null) {
-                connectionListener.onConnecting();
-            }
+        p2PServiceInstance.BeforeStartSocketConnection.addListener(beforeStartSocketConnection -> {
+            onConnecting.broadcast("");
 
             // Register all event listeners here
-            p2PServiceInstance.setSocketConnectionFailed((_, _) -> {
+            p2PServiceInstance.SocketConnectionFailed.addListener(socketConnectionFailed -> {
                 if (!isCreatingPeer && !IsConnectivityChanged) {
                     onSocketConnectionFailedDebounce.call();
                 }
             });
 
-            p2PServiceInstance.setReceiveData((_, _) -> {
-                onReceiveDataDebounce.call();
-            });
+            p2PServiceInstance.ReceiveData.addListener(receiveData -> onReceiveDataDebounce.call());
 
-            p2PServiceInstance.setConnectionToServerFailed((_, _) -> {
-                onConnectionToServerFailedDebounce.call();
-            });
+            p2PServiceInstance.ConnectionToServerFailed.addListener(connectionToServerFailed -> onConnectionToServerFailedDebounce.call());
 
-            p2PServiceInstance.setSocketConnectionClose((_, _) -> {
-                onSocketConnectionCloseDebounce.call();
-            });
+            p2PServiceInstance.SocketConnectionClose.addListener(socketConnectionClose -> onSocketConnectionCloseDebounce.call());
 
-            p2PServiceInstance.setConnectionEstablished((_, _) -> {
-                onConnectionEstablishedDebounce.call();
-            });
+            p2PServiceInstance.ConnectionEstablished.addListener(connectionEstablished -> onConnectionEstablishedDebounce.call());
         });
     }
 
     private void _markPeerAsAlive() {
-        Log.d("PeerService", "markPeerAsAlive -> start - " + peerId);
+        Log.d("RepocketSDK", "markPeerAsAlive -> start - " + peerId);
         Response response = null;
         try {
             response = Services.PeerManagerApiService.Post("peer/markPeerAsAlive", new HashMap<String, Object>() {{
@@ -344,20 +329,16 @@ public class PeerService {
         }
         boolean isAlive = response.code() == 200;
         if (isAlive) {
-            Log.d("PeerService", "markPeerAsAlive -> isAlive");
+            Log.d("RepocketSDK", "markPeerAsAlive -> isAlive");
             isPeerActive = true;
-            if (connectionListener != null) {
-                connectionListener.onConnected();
-            }
+            onConnected.broadcast("");
             enabledLocalMonitor = true;
             startPeerMonitor();
             startConnectionMonitor();
             startVpnWatcher();
         } else if (response.code() == 403) {
-            Log.d("PeerService", "_markPeerAsAlive -> Error happened: HttpStatusCode(" + response.code() + ")");
-            if (connectionListener != null) {
-                connectionListener.onRefreshTokenRequired();
-            }
+            Log.d("RepocketSDK", "_markPeerAsAlive -> Error happened: HttpStatusCode(" + response.code() + ")");
+            onRefreshTokenRequired.broadcast("_markPeerAsAlive -> Error happened: HttpStatusCode(" + response.code() + ")");
         }
     }
 
@@ -375,7 +356,7 @@ public class PeerService {
         String userId = MyPlayerPrefs.GetString("userId");
         String versionToken = MyPlayerPrefs.GetString("configVersionToken");
         peerMonitor.init(peerId, userId, versionToken);
-        peerMonitor.start(this::_handleConnectionClosed, this::credentialsMissing, this::_verifyUIStatus, _settings.PeerMonitorRate);
+        peerMonitor.start(this::_handleConnectionClosed, this::credentialsMissing, this::_verifyUIStatus, _settings.peerMonitorRate);
     }
 
     private void credentialsMissing() {
@@ -415,23 +396,23 @@ public class PeerService {
 
         boolean isEnabled = MyPlayerPrefs.GetInt("shareInternet") == 1;
         if (isEnabled) {
-            Log.d("PeerService", "startLocalPeerMonitor -> checking for unhandled disconnects");
+            Log.d("RepocketSDK", "startLocalPeerMonitor -> checking for unhandled disconnects");
             String status = MyPlayerPrefs.GetString("connectionStatus");
             if (!"connected".equals(status)) {
-                Log.d("PeerService", "startLocalPeerMonitor -> not connected, checking internet connection");
+                Log.d("RepocketSDK", "startLocalPeerMonitor -> not connected, checking internet connection");
                 ConnectionMonitor monitor = new ConnectionMonitor();
                 monitor.setDuration(1000);
                 monitor.start(() -> {
-                    Log.d("PeerService", "startLocalPeerMonitor -> No Internet connection");
+                    Log.d("RepocketSDK", "startLocalPeerMonitor -> No Internet connection");
                     monitor.stop();
                 }, () -> {
-                    Log.d("PeerService", "startLocalPeerMonitor -> Internet connection present, resetting peer");
+                    Log.d("RepocketSDK", "startLocalPeerMonitor -> Internet connection present, resetting peer");
                     monitor.stop();
                     try {
                         _resetPeer();
-                        Log.d("PeerService", "startLocalPeerMonitor -> Reset peer after an unhandled disconnect");
+                        Log.d("RepocketSDK", "startLocalPeerMonitor -> Reset peer after an unhandled disconnect");
                     } catch (Exception exception) {
-                        Log.e("PeerService", "startLocalPeerMonitor -> Error resetting peer: " + exception.getMessage());
+                        Log.d("RepocketSDK", "startLocalPeerMonitor -> Error resetting peer: " + exception.getMessage());
                         throw new RuntimeException(exception);
                     }
                 });
@@ -441,9 +422,7 @@ public class PeerService {
 
     private void _verifyUIStatus() {
         isPeerActive = true;
-        if (connectionListener != null) {
-            connectionListener.onConnected();
-        }
+        onConnected.broadcast("");
     }
 
     private void _resetPeer() {
@@ -456,10 +435,8 @@ public class PeerService {
     }
 
     private void handleConnectionClosedDebounce() {
-        Log.d("PeerService", "PeerService(" + localId + ") -> _handleConnectionClosed");
-        if (connectionListener != null) {
-            connectionListener.onDisconnected();
-        }
+        Log.d("RepocketSDK", "PeerService(" + localId + ") -> _handleConnectionClosed");
+        onDisconnected.broadcast("PeerService(" + localId + ") -> _handleConnectionClosed");
         if (_shouldReconnectThePeer()) {
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 _resetPeer();
@@ -472,7 +449,7 @@ public class PeerService {
     }
 
     private void deletePeerDebounce() {
-        Log.d("PeerService", "deletePeerDebounce");
+        Log.d("RepocketSDK", "deletePeerDebounce");
         stop(false);
     }
 
@@ -498,22 +475,20 @@ public class PeerService {
      * @param keepConnectionMonitor Whether the connection monitor should keep running or not
      */
     public void stop(boolean keepConnectionMonitor) {
-        Log.d("PeerService", "PeerService(" + localId + ") -> Stop");
+        Log.d("RepocketSDK", "PeerService(" + localId + ") -> Stop");
         if (peerId != null) {
             peerMonitor.stop();
             if (!keepConnectionMonitor) {
                 connectionMonitor.stop();
             }
             vpnWatcher.stop();
-            if (connectionListener != null) {
-                connectionListener.onDisconnected();
-            }
+            onDisconnected.broadcast("");
             try {
                 Services.PeerManagerApiService.Delete("peer/deletePeer", new HashMap<String, Object>() {{
                     put("peerId", peerId);
                 }});
             } catch (Exception e) {
-                Log.e("PeerService", "PeerService(" + localId + ") -> exception: " + e.getMessage());
+                Log.d("RepocketSDK", "PeerService(" + localId + ") -> exception: " + e.getMessage());
             }
 
             p2PServiceInstance.end();

@@ -1,5 +1,7 @@
 package com.repocket.androidsdk.classes;
 
+import android.util.Log;
+
 import java.util.Enumeration;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,7 +25,7 @@ public class VPNWatcher {
     }
 
     public void start(Runnable onVpnActivated) {
-        System.out.println("VPNWatcher -> start");
+        Log.d("RepocketSDK","VPNWatcher -> start");
         if (!isRunning) {
             isRunning = true;
 
@@ -43,7 +45,7 @@ public class VPNWatcher {
     }
 
     public void stop() {
-        System.out.println("VPNWatcher -> stop");
+        Log.d("RepocketSDK","VPNWatcher -> stop");
         if (timer != null) {
             isRunning = false;
             timer.cancel();

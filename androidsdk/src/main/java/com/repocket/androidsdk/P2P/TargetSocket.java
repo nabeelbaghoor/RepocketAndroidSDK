@@ -1,51 +1,43 @@
 package com.repocket.androidsdk.P2P;
+
+import android.util.Log;
+
+import com.repocket.androidsdk.shared.EventHandler;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.Dictionary;
-import java.util.concurrent.CountDownLatch;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 
 public class TargetSocket {
     private final byte[] buffer;
-    private final CountDownLatch onConnected = new CountDownLatch(1);
     private final byte[] receivedBuffer;
-    private final Dictionary<String, Object> request;
+    private final Map<String, Object> request;
     private final Socket requestHandlerSocket;
-    public Socket socket;
+    public final Socket socket;
+    public EventHandler<Exception> targetWebsiteError = new EventHandler<>();
 
-    public TargetSocket(Socket requestHandlerSocket, Dictionary<String, Object> request, byte[] buffer) {
+    public TargetSocket(Socket requestHandlerSocket, Map<String, Object> request, byte[] buffer) {
         this.requestHandlerSocket = requestHandlerSocket;
         this.request = request;
         this.receivedBuffer = buffer;
         this.buffer = new byte[8192];
-    }
-
-    public interface TargetWebsiteErrorListener {
-        void onTargetWebsiteError(TargetSocket targetSocket);
-    }
-
-    private TargetWebsiteErrorListener targetWebsiteErrorListener;
-
-    public void setTargetWebsiteErrorListener(TargetWebsiteErrorListener listener) {
-        targetWebsiteErrorListener = listener;
-    }
-
-    public void removeAllListeners() {
-        targetWebsiteErrorListener = null;
+        this.socket = new Socket();
     }
 
     public void connect() {
         if (request == null) return;
 
-        int port = request.get("port") != null ? Integer.parseInt(request.get("port").toString()) : 80;
+        int port = request.containsKey("port") ? Integer.parseInt(request.get("port").toString()) : 80;
 
         try {
-            socket = new Socket();
+            socket.connect(new InetSocketAddress(request.get("host").toString(), port));
             socket.setSoTimeout(30000);
             socket.setTcpNoDelay(true);
 
-            onConnected.await();
-            socket.connect(new InetSocketAddress(request.get("host").toString(), port));
+            onConnect();
 
             if (isHttps()) {
                 String response = request.get("httpVersion") + " 200 Connection Established\r\n\r\n";
@@ -54,11 +46,15 @@ public class TargetSocket {
             }
 
             if (!isHttps()) {
-                socket.getOutputStream().write(receivedBuffer);
+                try {
+                    onConnectedWait();
+                    socket.getOutputStream().write(receivedBuffer);
+                } catch (Exception e) {
+                    Log.d("RepocketSDK","targetSocket.Send error: " + e);
+                }
             }
-        } catch (IOException | InterruptedException e) {
-            System.out.println("Error connecting to target socket: " + e);
-            return;
+        } catch (Exception e) {
+            Log.d("RepocketSDK","Error connecting to target socket: " + e);
         }
     }
 
@@ -67,58 +63,68 @@ public class TargetSocket {
     }
 
     private void onConnect() {
-        onConnected.countDown();
         try {
+            onConnected();
             socket.getInputStream().read(buffer);
         } catch (IOException e) {
-            System.out.println("Error connecting to target socket: " + e);
+            Log.d("RepocketSDK","Error connecting to target socket: " + e);
+        }
+    }
+
+    private void onConnected() {
+        synchronized (this) {
+            notify();
+        }
+    }
+
+    private void onConnectedWait() {
+        synchronized (this) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void close() {
+        Log.d("RepocketSDK","TargetSocket -> onSocketCloseEvent");
+        try {
+            socket.close();
+            // The requestHandlerSocket should already be closed, but we verify it here
+            new Thread(() -> {
+                try {
+                    Thread.sleep(3000);
+                    requestHandlerSocket.close();
+                } catch (InterruptedException | IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
     private void onReceive() {
-        if (!socket.isConnected()) return;
-
         try {
             int bytesRead = socket.getInputStream().read(buffer);
-
-            System.out.println("TargetSocket -> bytesRead: " + bytesRead);
-
+            Log.d("RepocketSDK","TargetSocket -> bytesRead: " + bytesRead);
             if (bytesRead > 0) {
                 byte[] receivedData = new byte[bytesRead];
                 System.arraycopy(buffer, 0, receivedData, 0, bytesRead);
-
                 requestHandlerSocket.getOutputStream().write(receivedData);
-
-                onReceive();
+                onConnected();
             } else {
                 close();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             onError(e);
         }
     }
 
-    private void close() {
-        System.out.println("TargetSocket -> onSocketCloseEvent");
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            Thread.sleep(3000);
-            requestHandlerSocket.close();
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void onError(Exception error) {
-        System.out.println("Error receiving data from target socket: " + error);
-        if (targetWebsiteErrorListener != null) {
-            targetWebsiteErrorListener.onTargetWebsiteError(this);
-        }
+        Log.d("RepocketSDK","Error receiving data from target socket: " + error);
+        targetWebsiteError.broadcast(error);
         try {
             socket.close();
         } catch (IOException e) {

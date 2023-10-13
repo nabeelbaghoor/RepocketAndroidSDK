@@ -88,10 +88,10 @@ public class Utils {
                     macAddress = "docker-" + macAddress;
                 }
 
-                Log.d("Utils", "Mac Address: " + macAddress);
+                Log.d("RepocketSDK", "Mac Address: " + macAddress);
                 String version = runtimeInfo.AppVersion;
                 String connectivityResult = checkConnectivityType(context);
-                Log.d("Utils", "Connectivity: " + connectivityResult);
+                Log.d("RepocketSDK", "Connectivity: " + connectivityResult);
 
                 return new Types.DeviceInfo(
                         Runtime.getRuntime().availableProcessors(),

@@ -1,192 +1,170 @@
 package com.repocket.androidsdk.P2P;
 
-import com.repocket.androidsdk.P2P.socks5.Socket5Handler;
-import com.repocket.androidsdk.services.PeerSocketEvents;
-
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import android.util.Log;
+
+import com.repocket.androidsdk.P2P.socks5.Socket5Handler;
+import com.repocket.androidsdk.services.PeerSocketEvents;
+import com.repocket.androidsdk.shared.EventHandler;
 
 public class RequestHandlerSocket {
-    private byte[] buffer;
-    private String ip;
-    private String peerId;
-    private int port;
-    private String reqId;
-    private boolean isSocks5Req;
-    private ReqHandlerSocket socket;
-    private Socket5Handler socks5TargetSocket;
-    private TargetSocket targetSocket;
+    private final byte[] _buffer;
+    private final String _ip;
+    private final String _peerId;
+    private final int _port;
+    private final String _reqId;
+    private boolean _isSocks5Req;
+    private ReqHandlerSocket _socket;
+    private Socket5Handler _socks5TargetSocket;
+    private TargetSocket _targetSocket;
+
+    public EventHandler<String> TargetWebsiteError = new EventHandler<>();
+    public EventHandler<String> SocketConnectionFailed = new EventHandler<>();
 
     public RequestHandlerSocket(String ip, int port, String reqId, String peerId) {
-        this.ip = ip;
-        this.port = port;
-        this.reqId = reqId;
-        this.peerId = peerId;
-        this.isSocks5Req = false;
-        this.buffer = new byte[4096];
+        _ip = ip;
+        _port = port;
+        _reqId = reqId;
+        _peerId = peerId;
+        _isSocks5Req = false;
+        _buffer = new byte[4096];
     }
 
-    public void removeAllListeners() {
-        // Remove all listeners
-    }
-
-    public void connect() throws IOException {
-        socket = new ReqHandlerSocket(ip, port);
-        socket.retryConnectionCounter = 0;
-        socket.type = "main";
-        socket.uid = new Random().nextInt();
-        socket.isBusy = false;
-        socket.setTcpNoDelay(true);
-
-        // socket.setSoTimeout(5000); // Set receive timeout if needed
-
-        socket.connect(null);
-        connectCallback();
-    }
-
-    private void connectCallback() throws IOException {
+    public void Connect() {
         try {
-            socket.finishConnect();
-
-            System.out.println("new socket req - " + reqId);
-
-            socket.beginReceive(buffer, 0, buffer.length, 0, receiveCallback, null);
-        } catch (Exception ex) {
-            System.out.println("ConnectCallback: error when connecting to socket-server: " + ex.getMessage());
-            socket.close();
-            if (targetSocket != null) {
-                targetSocket.socket.close();
-            }
+            _socket = new ReqHandlerSocket();
+            _socket.RetryConnectionCounter = 0;
+            _socket.Type = "main";
+            _socket.Uid = new Random().nextInt();
+            _socket.IsBusy = false;
+            // _socket.setReceiveTimeout(5000); // Set receive timeout if needed
+            _socket.connect(new InetSocketAddress(_ip, _port));
+            ConnectCallback();
+        } catch (IOException ex) {
+            // Handle connection error
+            SocketConnectionFailed.broadcast(ex.getMessage());
+            CloseSockets();
         }
     }
 
-    private final java.nio.channels.CompletionHandler<Integer, Void> receiveCallback = new java.nio.channels.CompletionHandler<Integer, Void>() {
-        @Override
-        public void completed(Integer bytesRead, Void attachment) {
+    private void ConnectCallback() {
+        try {
+            // Handle socket connection callback
+            _socket.connect(new InetSocketAddress(_ip, _port));
+            Log.d("RepocketSDK", "new socket req - " + _reqId);
+            _socket.getInputStream().read(_buffer, 0, _buffer.length);
+//            _socket.BeginReceive(_buffer, 0, _buffer.length, ReceiveCallback, null);
+        } catch (IOException ex) {
+            // Handle connection error
+            Log.d("RepocketSDK", "ConnectCallback: error when connecting to socket-server: " + ex.getMessage());
+            SocketConnectionFailed.broadcast(ex.getMessage());
+            CloseSockets();
+        }
+    }
+
+    private void ReceiveCallback() {
+        try {
+            // Handle data received on the socket
+            int bytesRead = _socket.getInputStream().read(_buffer, 0, _buffer.length);
             if (bytesRead > 0) {
-                byte[] receivedData = Arrays.copyOf(buffer, bytesRead);
+                byte[] receivedData = new byte[bytesRead];
+                System.arraycopy(_buffer, 0, receivedData, 0, bytesRead);
 
-                try {
-                    handleRead(receivedData);
-                } catch (Exception e) {
-                    System.out.println("e: " + e);
-                    throw new RuntimeException(e);
-                }
+                // Handle received data
+                HandleRead(receivedData);
 
-                socket.beginReceive(buffer, 0, buffer.length, 0, receiveCallback, null);
+                _socket.getInputStream().read(_buffer, 0, _buffer.length);
             } else {
-                System.out.println("RequestHandlerSocket -> closed - " + reqId);
+                // Handle socket closure
+                Log.d("RepocketSDK", "RequestHandlerSocket -> closed - " + _reqId);
+                CloseSockets();
+            }
+        } catch (IOException ex) {
+            // Handle receive error
+            Log.d("RepocketSDK", "ReceiveCallback error: " + ex.getMessage());
+            CloseSockets();
+        }
+    }
+
+    private void HandleRead(byte[] data) {
+        String request = new String(data, StandardCharsets.US_ASCII);
+        final String authPacket = PeerSocketEvents.Authentication;
+        final String remoteSocketClosePacket = PeerSocketEvents.RemoteSocketClosed;
+        final String httpFirstLineRegex = "^(GET|HEAD|POST|PUT|DELETE|OPTIONS|TRACE|PATCH|CONNECT) (\\S+\\s+HTTP/1\\.(0|1)(\\r\\n([A-Za-z0-9-_]+:\\s+[\\S ]+)?)+\\r\\n\\r\\n.*)*$";
+
+        if (authPacket.equals(request)) {
+            String authenticationResponse = "authentication " + _peerId + " " + _reqId;
+            byte[] responseBytes = authenticationResponse.getBytes(StandardCharsets.US_ASCII);
+            // Send authentication response using _socket's output stream
+            // Handle sending data
+            return;
+        }
+
+        if (remoteSocketClosePacket.equals(request)) {
+            if (_targetSocket != null) {
                 try {
-                    socket.close();
-                    if (targetSocket != null) {
-                        targetSocket.socket.close();
-                    }
+                    _targetSocket.socket.close();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
+        } else if (_targetSocket != null) {
+            try {
+                SocketHelper.writeToSocket(_targetSocket.socket, data);
+            } catch (IOException ex) {
+                Log.d("RepocketSDK", "TargetSocket send error: " + ex.getMessage());
+            }
+            return;
+        } else if (_isSocks5Req) {
+            // Handle SOCKS5 events
+            return;
         }
 
-        @Override
-        public void failed(Throwable exc, Void attachment) {
-            System.out.println("ReceiveCallback error: " + exc.getMessage());
+        if (request.startsWith("CONNECT") || request.contains("HTTP/1.1") || Pattern.matches(httpFirstLineRegex, request)) {
+            _socket.IsBusy = true;
+            HttpProtocolHandler(request, data);
+        } else if (IsSocks5Request(data)) {
+            _isSocks5Req = true;
+            _socks5TargetSocket = new Socket5Handler(_socket, _port, _ip, "8.8.8.8"); // TODO: hardcoded DNS
             try {
-                socket.close();
-                if (targetSocket != null) {
-                    targetSocket.socket.close();
-                }
-            } catch (IOException e) {
+                _socks5TargetSocket.handle(data);
+            } catch (UnknownHostException e) {
                 throw new RuntimeException(e);
             }
         }
-    };
-
-    private void handleRead(byte[] data) throws Exception {
-        String request = new String(data, StandardCharsets.US_ASCII);
-
-        final String authPacket = PeerSocketEvents.Authentication;
-        final String remoteSocketClosePacket = PeerSocketEvents.RemoteSocketClosed;
-        final String httpFirstLineRegex = "^(GET|HEAD|POST|PUT|DELETE|OPTIONS|TRACE|PATCH|CONNECT) (\\S+\\s+HTTP\\/1\\.(0|1)(\\r\\n([A-Za-z0-9-_]+:\\s+[\\S ]+)?)+\\r\\n\\r\\n.*)*$";
-
-        System.out.println("RequestHandlerSocket -> request: " + request);
-        if (request.equals(authPacket)) {
-            String authenticationResponse = "authentication " + peerId + " " + reqId;
-            byte[] responseBytes = authenticationResponse.getBytes(StandardCharsets.US_ASCII);
-            socket.send(responseBytes);
-            return;
-        }
-
-        if (request.equals(remoteSocketClosePacket)) {
-            if (targetSocket != null) {
-                targetSocket.socket.close();
-            }
-        } else if (targetSocket != null) {
-            try {
-                targetSocket.socket.getOutputStream().write(data);
-            } catch (Exception ex) {
-                System.out.println("TargetSocket send error: " + ex.getMessage());
-            }
-            return;
-        } else if (isSocks5Req) {
-            // write events handled by pipe method on the socket for socks5
-            // Handle events for SOCKS5
-            return;
-        }
-
-        if (request.startsWith("CONNECT") || request.contains("HTTP/1.1") || request.matches(httpFirstLineRegex)) {
-            // http/https
-            socket.isBusy = true;
-
-            httpProtocolHandler(request, data);
-        } else if (isSocks5Request(data)) {
-            // socks5
-            isSocks5Req = true;
-            socks5TargetSocket = new Socket5Handler(socket, port, ip, "8.8.8.8"); // TODO: hardcoded dns
-            socks5TargetSocket.handle(data);
-        }
-        // Handle other cases
     }
 
-    private void httpProtocolHandler(String data, byte[] buffer) {
-        Map<String, Object> httpRequest = parseHttpRequest(data);
-
-        if (httpRequest == null) {
-            return;
-        }
-
-        int port = (httpRequest.containsKey("port") && !httpRequest.get("port").toString().isEmpty()) ? Integer.parseInt(httpRequest.get("port").toString()) : 80;
+    private void CloseSockets() {
         try {
-            Map<String, Object> httpRequestConverted = new HashMap<>();
-            for (Map.Entry<String, Object> entry : httpRequest.entrySet()) {
-                httpRequestConverted.put(entry.getKey(), entry.getValue());
+            if (_socket != null) {
+                _socket.close();
             }
-
-            targetSocket = new TargetSocket(socket, (Dictionary<String, Object>) httpRequestConverted, buffer);
-
-            targetSocket.targetWebsiteError = (sender, e) -> {
-                // Handle target website error
-            };
-
-            targetSocket.connect();
-        } catch (Exception ex) {
-            System.out.println("TargetSocket creation error: " + ex.getMessage());
+            if (_targetSocket != null && _targetSocket.socket != null) {
+                _targetSocket.socket.close();
+            }
+        } catch (IOException ex) {
+            // Handle close error
+            Log.d("RepocketSDK", "Socket close error: " + ex.getMessage());
         }
     }
 
-    private boolean isSocks5Request(byte[] buffer) {
+    private boolean IsSocks5Request(byte[] buffer) {
         if (buffer == null) {
             return false;
         }
 
-        // Check if buffer length is at least 10 bytes
-        // Check SOCKS version
-        // Check command code
-        // Check reserved byte
         if (buffer.length < 10 || buffer[0] != 5 || buffer[1] != 1 || buffer[2] != 0) {
             return false;
         }
@@ -194,28 +172,50 @@ public class RequestHandlerSocket {
         return true;
     }
 
-    private Map<String, Object> parseHttpRequest(String data) {
+    private void HttpProtocolHandler(String data, byte[] buffer) {
+        Map<String, String> httpRequest = ParseHttpRequest(data);
+
+        if (httpRequest == null) {
+            return;
+        }
+
+        int port = httpRequest.containsKey("port") && !httpRequest.get("port").isEmpty()
+                ? Integer.parseInt(httpRequest.get("port"))
+                : 80;
         try {
-            Map<String, Object> httpRequest = new HashMap<>();
+            Map<String, Object> httpRequestConverted = httpRequest
+                    .entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> (Object) entry.getValue()));
 
+            _targetSocket = new TargetSocket(_socket, httpRequestConverted, buffer);
+
+            _targetSocket.targetWebsiteError.addListener(e -> TargetWebsiteError.broadcast(e.toString()));
+
+            _targetSocket.connect();
+        } catch (Exception ex) {
+            Log.d("RepocketSDK", "TargetSocket creation error: " + ex.getMessage());
+        }
+    }
+
+
+
+    private Map<String, String> ParseHttpRequest(String data) {
+        try {
+            Map<String, String> httpRequest = new HashMap<>();
             if (data.contains("HTTP/1.0")) {
-                // Parse HTTP/1.0 request
-                String[] splitted = data.split("[ \r\n]+");
-
+                String[] splitted = data.split(" |\r|\n");
                 httpRequest.put("method", splitted[0]);
                 httpRequest.put("path", splitted[1].split(":")[0]);
                 httpRequest.put("httpVersion", splitted[2].split("\r")[0]);
                 httpRequest.put("host", splitted[1].split(":")[0]);
                 httpRequest.put("port", splitted[1].split(":")[1]);
             } else {
-                // Parse other HTTP requests
-                String[] splitted = data.split("[\r\n]+");
-
+                String[] splitted = data.split("\r\n");
                 String[] firstLine = splitted[0].trim().split(" ");
                 httpRequest.put("method", firstLine[0]);
                 httpRequest.put("path", firstLine[1]);
                 httpRequest.put("httpVersion", firstLine[2]);
-
                 int index = -1;
                 for (int i = 0; i < splitted.length; i++) {
                     if (splitted[i].toLowerCase().startsWith("host: ")) {
@@ -223,21 +223,22 @@ public class RequestHandlerSocket {
                         break;
                     }
                 }
-                String hostLine = splitted[index];
-                String host = hostLine.split(":")[1].trim();
-                httpRequest.put("host", host);
-
-                String[] hostParts = hostLine.split(":");
-                if (hostParts.length > 2) {
-                    httpRequest.put("port", Integer.parseInt(hostParts[2].trim()));
-                } else {
-                    httpRequest.put("port", 80);
+                if (index != -1) {
+                    String hostLine = splitted[index];
+                    String host = hostLine.split(":")[1].trim();
+                    httpRequest.put("host", host);
+                    String[] hostParts = hostLine.split(":");
+                    if (hostParts.length > 2) {
+                        httpRequest.put("port", Integer.toString(Integer.parseInt(hostParts[2].trim())));
+                    } else {
+                        httpRequest.put("port", "80");
+                    }
                 }
             }
-
             return httpRequest;
         } catch (Exception ex) {
-            System.out.println("ParseHttpRequest error: " + ex.getMessage());
+            // Handle parse error
+            Log.d("RepocketSDK", "ParseHttpRequest error: " + ex.getMessage());
             return null;
         }
     }

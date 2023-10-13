@@ -4,23 +4,14 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class ReqHandlerSocket extends Socket {
-    public Boolean isBusy;
-    public Integer retryConnectionCounter;
-    public String type;
-    public Integer uid;
+    public Boolean IsBusy;
+    public Integer RetryConnectionCounter;
+    public String Type;
+    public Integer Uid;
 
     public ReqHandlerSocket() throws IOException {
         super();
-    }
-
-    public ReqHandlerSocket(String host, int port) throws IOException {
-        super(host, port);
-    }
-
-    public ReqHandlerSocket(String host, int port, boolean isSocks) throws IOException {
-        super(host, port);
-        if (isSocks) {
-            // Handle events for SOCKS5
-        }
+        this.setTcpNoDelay(true);
+        // Additional socket initialization if needed
     }
 }

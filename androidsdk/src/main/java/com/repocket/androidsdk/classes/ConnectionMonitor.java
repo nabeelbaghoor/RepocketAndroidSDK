@@ -39,7 +39,7 @@ public class ConnectionMonitor {
         if (isRunning) {
             isRunning = false;
             timer.cancel();
-            Log.d("ConnectionMonitor", "Monitor Stopped.");
+            Log.d("RepocketSDK", "Monitor Stopped.");
         }
     }
 
@@ -48,14 +48,14 @@ public class ConnectionMonitor {
 
         try {
             if (checkConnection()) {
-                Log.d("ConnectionMonitor", "Internet connection is present");
+                Log.d("RepocketSDK", "Internet connection is present");
                 onConnectionActive.run();
             } else {
-                Log.d("ConnectionMonitor", "Internet connection is absent");
+                Log.d("RepocketSDK", "Internet connection is absent");
                 onConnectionDeactivate.run();
             }
         } catch (Exception e) {
-            Log.e("ConnectionMonitor", "Error checking internet connection: " + e.getMessage());
+            Log.d("RepocketSDK", "Error checking internet connection: " + e.getMessage());
         }
     }
 
