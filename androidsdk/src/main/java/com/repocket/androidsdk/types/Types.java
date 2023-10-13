@@ -95,5 +95,9 @@ public abstract class Types {
         public int port;
         public int socketReqHandlerPort;
     }
+
+    public class IpInfo{
+        public String query;
+    }
 }
 

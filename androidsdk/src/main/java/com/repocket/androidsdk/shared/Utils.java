@@ -5,12 +5,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Build;
-import android.os.Looper;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -22,11 +19,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class Utils {
     private static String connectivityType;
@@ -71,46 +63,40 @@ public class Utils {
         return String.format("%08x%08x", h2, h1);
     }
 
-    public static CompletableFuture<Types.DeviceInfo> getDeviceInfo() {
-        // TODO: Remove context usage or provide a reference
-        Context context = null;
-        return CompletableFuture.supplyAsync(() -> {
+    public static Types.DeviceInfo getDeviceInfo() {
+        try {
             Types.RuntimeInfo runtimeInfo = getRuntimeInfo();
-
             String deviceName = getDeviceName(runtimeInfo);
-            CompletableFuture<String> macAddressFuture = getMacAddressAsync();
+            String macAddress = getMacAddress();
 
-            try {
-                String macAddress = macAddressFuture.get();
-                macAddress = cyrb53(macAddress,0);
+            macAddress = cyrb53(macAddress,0);
 
-                if (runtimeInfo.IsDocker) {
-                    macAddress = "docker-" + macAddress;
-                }
-
-                Log.d("RepocketSDK", "Utils -> getDeviceInfo -> Mac Address: " + macAddress);
-                String version = runtimeInfo.AppVersion;
-                String connectivityResult = checkConnectivityType(context);
-                Log.d("RepocketSDK", "Utils -> getDeviceInfo -> Connectivity: " + connectivityResult);
-
-                return new Types.DeviceInfo(
-                        Runtime.getRuntime().availableProcessors(),
-                        macAddress,
-                        Build.FINGERPRINT,
-                        true,
-                        Build.MODEL,
-                        version,
-                        true,
-                        0,
-                        connectivityResult,
-                        deviceName
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (runtimeInfo.IsDocker) {
+                macAddress = "docker-" + macAddress;
             }
 
-            return null;
-        });
+            Log.d("RepocketSDK", "Utils -> getDeviceInfo -> Mac Address: " + macAddress);
+            String version = runtimeInfo.AppVersion;
+            String connectivityResult = checkConnectivityType();
+            Log.d("RepocketSDK", "Utils -> getDeviceInfo -> Connectivity: " + connectivityResult);
+
+            return new Types.DeviceInfo(
+                    Runtime.getRuntime().availableProcessors(),
+                    macAddress,
+                    Build.FINGERPRINT,
+                    true,
+                    Build.MODEL,
+                    version,
+                    true,
+                    0,
+                    connectivityResult,
+                    deviceName
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     private static String getDeviceName(Types.RuntimeInfo runtimeInfo) {
@@ -133,7 +119,9 @@ public class Utils {
         return "Desktop";
     }
 
-    private static String checkConnectivityType(Context context) {
+    private static String checkConnectivityType() {
+        // TODO: Remove context usage or provide a reference
+        Context context = null;
         // Use Android-specific code to determine connectivity type
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -152,36 +140,62 @@ public class Utils {
         return "None";
     }
 
-    private static CompletableFuture<String> getMacAddressAsync() {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                List<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-                NetworkInterface activeInterface = null;
+//    private static String getMacAddress() {
+//        try {
+//            List<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+//            NetworkInterface activeInterface = null;
+//
+//            for (NetworkInterface networkInterface : networkInterfaces) {
+//                if (networkInterface.isUp()) {
+//                    activeInterface = networkInterface;
+//                    break;
+//                }
+//            }
+//
+//            if (activeInterface != null) {
+//                byte[] macBytes = activeInterface.getHardwareAddress();
+//                if (macBytes != null) {
+//                    StringBuilder macAddressBuilder = new StringBuilder();
+//                    for (byte b : macBytes) {
+//                        macAddressBuilder.append(String.format("%02X", b));
+//                    }
+//                    return macAddressBuilder.toString();
+//                }
+//            }
+//
+//            throw new Exception("No active network interface found.");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
-                for (NetworkInterface networkInterface : networkInterfaces) {
-                    if (networkInterface.isUp()) {
-                        activeInterface = networkInterface;
-                        break;
-                    }
+    private static String getMacAddress() {
+        try {
+            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface nif : all) {
+                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
+
+                byte[] macBytes = nif.getHardwareAddress();
+                if (macBytes == null) {
+                    return "";
                 }
 
-                if (activeInterface != null) {
-                    byte[] macBytes = activeInterface.getHardwareAddress();
-                    if (macBytes != null) {
-                        StringBuilder macAddressBuilder = new StringBuilder();
-                        for (byte b : macBytes) {
-                            macAddressBuilder.append(String.format("%02X", b));
-                        }
-                        return macAddressBuilder.toString();
-                    }
+                StringBuilder res1 = new StringBuilder();
+                for (byte b : macBytes) {
+                    // res1.append(Integer.toHexString(b & 0xFF) + ":");
+                    res1.append(String.format("%02X:",b));
                 }
 
-                throw new Exception("No active network interface found.");
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+                if (res1.length() > 0) {
+                    res1.deleteCharAt(res1.length() - 1);
+                }
+                return res1.toString();
             }
-        });
+        } catch (Exception ex) {
+            //handle exception
+        }
+        return "";
     }
 
     public static Types.RuntimeInfo getRuntimeInfo() {

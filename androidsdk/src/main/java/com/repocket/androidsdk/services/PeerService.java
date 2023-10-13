@@ -4,7 +4,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.repocket.androidsdk.classes.ConnectionMonitor;
 import com.repocket.androidsdk.classes.PeerMonitor;
 import com.repocket.androidsdk.classes.VPNWatcher;
@@ -21,11 +20,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.CompletableFuture;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -128,10 +125,11 @@ public class PeerService {
 
         //  1. getting speed test
         //  2. getting device info
-        Types.DeviceInfo deviceInfo = Utils.getDeviceInfo().join();
+        Types.DeviceInfo deviceInfo = Utils.getDeviceInfo();
+        Log.d("RepocketSDK", "deviceInfo : " + deviceInfo);
 
         //  3. getting ip info
-        JSONObject ipInfo = getIpInfo();
+        Types.IpInfo ipInfo = getIpInfo();
 
         // 4. check connectivity
         boolean isConnectivityCheck = true; // ConnectivityData.connectivityCheck(); // TODO: Complete logic
@@ -148,7 +146,7 @@ public class PeerService {
 
             String finalUserId = userId;
             Response response = Services.PeerManagerApiService.Post(CreatePeerEndpoint, new HashMap<String, Object>() {{
-                put("ip", ipInfo != null ? ipInfo.optString("query") : ""); // TODO: Check behavior on the server
+                put("ip", ipInfo != null ? ipInfo.query : ""); // TODO: Check behavior on the server
                 put("username", "test");
                 put("password", "test");
                 put("userId", finalUserId);
@@ -174,9 +172,9 @@ public class PeerService {
                 String token = createPeer != null ? createPeer.data.token : null;
                 tcpServerInfo = createPeer != null ? createPeer.data.tcpServerInfo : null;
 
-                Log.d("RepocketSDK","_tcpServerInfo?.ip: " + (tcpServerInfo != null ? tcpServerInfo.ip : ""));
-                Log.d("RepocketSDK", "_tcpServerInfo?.port: " + (tcpServerInfo != null ? tcpServerInfo.port : ""));
-                Log.d("RepocketSDK", "_tcpServerInfo?.socketReqHandlerPort: " + (tcpServerInfo != null ? tcpServerInfo.socketReqHandlerPort : ""));
+                Log.d("RepocketSDK","PeerService -> createPeer -> _tcpServerInfo?.ip: " + (tcpServerInfo != null ? tcpServerInfo.ip : ""));
+                Log.d("RepocketSDK", "PeerService -> createPeer -> _tcpServerInfo?.port: " + (tcpServerInfo != null ? tcpServerInfo.port : ""));
+                Log.d("RepocketSDK", "_PeerService -> createPeer -> tcpServerInfo?.socketReqHandlerPort: " + (tcpServerInfo != null ? tcpServerInfo.socketReqHandlerPort : ""));
 
                 if (userId == null && createPeer != null) {
                     userId = createPeer.data.userId;
@@ -223,7 +221,7 @@ public class PeerService {
         }
     }
 
-    private JSONObject getIpInfo() throws IOException {
+    private Types.IpInfo getIpInfo() throws IOException {
         Request request = new Request.Builder()
                 .url("http://ip-api.com/json")
                 .get()
@@ -232,12 +230,7 @@ public class PeerService {
         String responseData = response.body().string();
 
         if (response.isSuccessful()) {
-            try {
-                return new JSONObject(responseData);
-            } catch (JSONException e) {
-                Log.d("RepocketSDK","PeerService -> getIpInfo -> Error parsing JSON: " + e.getMessage());
-                return null;
-            }
+            return Utils.fromJson(responseData, Types.IpInfo.class);
         } else {
             Log.d("RepocketSDK", "PeerService -> getIpInfo -> Something went wrong");
             return null;
