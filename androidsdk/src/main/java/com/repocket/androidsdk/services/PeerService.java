@@ -175,7 +175,7 @@ public class PeerService {
                 Log.d("RepocketSDK", "PeerService -> createPeer -> _tcpServerInfo?.port: " + (tcpServerInfo != null ? tcpServerInfo.port : ""));
                 Log.d("RepocketSDK", "_PeerService -> createPeer -> tcpServerInfo?.socketReqHandlerPort: " + (tcpServerInfo != null ? tcpServerInfo.socketReqHandlerPort : ""));
 
-                if (userId == null && createPeer != null) {
+                if (userId == null || userId.isEmpty()) {
                     userId = createPeer.data.userId;
                     MyPlayerPrefs.SetString("userId", userId != null ? userId : "");
                 }
