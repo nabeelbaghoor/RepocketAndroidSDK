@@ -126,7 +126,6 @@ public class PeerService {
         //  1. getting speed test
         //  2. getting device info
         Types.DeviceInfo deviceInfo = Utils.getDeviceInfo();
-        Log.d("RepocketSDK", "deviceInfo : " + deviceInfo);
 
         //  3. getting ip info
         Types.IpInfo ipInfo = getIpInfo();

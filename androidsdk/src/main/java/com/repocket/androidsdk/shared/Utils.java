@@ -32,22 +32,24 @@ public class Utils {
 
 
     public static void checkAndroidPermissions() {
-        // TODO: Remove activity usage or provide a reference
-        Activity activity = new Activity();
-        // Check if the app has the INTERNET permission
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            int permissionStatus = ContextCompat.checkSelfPermission(activity, Manifest.permission.INTERNET);
-
-            if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
-                // Request the INTERNET permission
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.INTERNET},
-                        INTERNET_PERMISSION_REQUEST_CODE);
-            } else {
-                // Permission has already been granted
-            }
-        } else {
-            // Versions prior to Marshmallow don't require runtime permission checks
-        }
+        return;
+        // TODO: Implement it
+//        // TODO: Remove activity usage or provide a reference
+//        Activity activity = new Activity();
+//        // Check if the app has the INTERNET permission
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            int permissionStatus = ContextCompat.checkSelfPermission(activity, Manifest.permission.INTERNET);
+//
+//            if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
+//                // Request the INTERNET permission
+//                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.INTERNET},
+//                        INTERNET_PERMISSION_REQUEST_CODE);
+//            } else {
+//                // Permission has already been granted
+//            }
+//        } else {
+//            // Versions prior to Marshmallow don't require runtime permission checks
+//        }
     }
 
     private static String cyrb53(String str, int seed) {
@@ -123,26 +125,27 @@ public class Utils {
     }
 
     private static String checkConnectivityType() {
-
-
-        // TODO: Remove context usage or provide a reference
-        Context context = null;
-        // Use Android-specific code to determine connectivity type
-        ConnectivityManager connectivityManager = (ConnectivityManager)
-                context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (connectivityManager != null) {
-            android.net.NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-            if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
-                if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-                    return "Wifi";
-                } else if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
-                    return "Mobile";
-                }
-            }
-        }
-
         return "None";
+
+        // TODO: Implement it
+//        // TODO: Remove context usage or provide a reference
+//        Context context = null;
+//        // Use Android-specific code to determine connectivity type
+//        ConnectivityManager connectivityManager = (ConnectivityManager)
+//                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//        if (connectivityManager != null) {
+//            android.net.NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+//            if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+//                if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+//                    return "Wifi";
+//                } else if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+//                    return "Mobile";
+//                }
+//            }
+//        }
+//
+//        return "None";
     }
 
 //    private static String getMacAddress() {
@@ -194,33 +197,6 @@ public class Utils {
             e.printStackTrace();
         }
         return "";
-
-
-//        try {
-//            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
-//            for (NetworkInterface nif : all) {
-//                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
-//
-//                byte[] macBytes = nif.getHardwareAddress();
-//                if (macBytes == null) {
-//                    return "";
-//                }
-//
-//                StringBuilder res1 = new StringBuilder();
-//                for (byte b : macBytes) {
-//                    // res1.append(Integer.toHexString(b & 0xFF) + ":");
-//                    res1.append(String.format("%02X:",b));
-//                }
-//
-//                if (res1.length() > 0) {
-//                    res1.deleteCharAt(res1.length() - 1);
-//                }
-//                return res1.toString();
-//            }
-//        } catch (Exception ex) {
-//            //handle exception
-//        }
-//        return "";
     }
 
     public static Types.RuntimeInfo getRuntimeInfo() {
