@@ -52,6 +52,7 @@ public class MainSocket {
             _mainSocket.setTcpNoDelay(true);
             EnableKeepAlive(_mainSocket);
             _mainSocket.connect(new InetSocketAddress(_ip, _port));
+            ReceiveData();
             return true;
         } catch (IOException ex) {
             Log.d("RepocketSDK", "MainSocket -> Connect: Main socket connect error:" + ex.getMessage());
@@ -68,19 +69,19 @@ public class MainSocket {
         }
     }
 
-    private void ConnectCallback() {
-        try {
-//            _mainSocket.connect();
-            _mainSocket.getInputStream().read(_buffer, 0, _buffer.length);
-            // Handle the read data
-        } catch (IOException ex) {
-            Log.d("RepocketSDK","MainSocket -> ConnectCallback -> error: "+ ex.getMessage());
-            _peerCloseWithError = true;
-            SocketConnectionFailed.broadcast(ex);
-        }
-    }
+//    private void AfterConnecting() {
+//        try {
+//            _mainSocket.getInputStream().read(_buffer, 0, _buffer.length);
+//            ReceiveData();
+//            // Handle the read data
+//        } catch (IOException ex) {
+//            Log.d("RepocketSDK","MainSocket -> ConnectCallback -> error: "+ ex.getMessage());
+//            _peerCloseWithError = true;
+//            SocketConnectionFailed.broadcast(ex);
+//        }
+//    }
 
-    private void ReceiveCallback() {
+    private void ReceiveData() {
         if (_peerCloseWithError) return;
 
         try {
@@ -96,13 +97,14 @@ public class MainSocket {
                     throw e;
                 }
 
-                _mainSocket.getInputStream().read(_buffer, 0, _buffer.length);
+                ReceiveData();
             } else {
                 Log.d("RepocketSDK:","MainSocket -> ReceiveCallback -> close");
                 OnClose();
             }
         } catch (IOException ex) {
             Log.d("RepocketSDK","MainSocket -> ReceiveCallback: Main socket receive error: "+ex.getMessage());
+            _peerCloseWithError = true;
             SocketConnectionFailed.broadcast(ex);
         }
     }
@@ -135,7 +137,11 @@ public class MainSocket {
         if (isAuthPacket) {
             Log.d("RepocketSDK","MainSocket -> HandleRead: Authentication");
             byte[] authData = ("authentication " + _token + " " + _userId + " " + _peerId).getBytes(StandardCharsets.UTF_8);
-            // Send authData via _mainSocket's output stream
+            try {
+                _mainSocket.getOutputStream().write(authData);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             return;
         }
 
@@ -149,7 +155,11 @@ public class MainSocket {
         if (isPingPacket) {
             Log.d("RepocketSDK","MainSocket -> HandleRead: PING");
             byte[] pongData = PeerSocketEvents.Pong.getBytes(StandardCharsets.UTF_8);
-            // Send pongData via _mainSocket's output stream
+            try {
+                _mainSocket.getOutputStream().write(pongData);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             return;
         }
 
@@ -176,13 +186,21 @@ public class MainSocket {
                 reqId, _peerId);
         reqHandlerSocket.SocketConnectionFailed.addListener(ex -> {
             byte[] connectionFailedData = (PeerSocketEvents.SocketHandlerConnectionFailed + ":" + reqId).getBytes(StandardCharsets.UTF_8);
-            // Send connectionFailedData via _mainSocket's output stream
+            try {
+                _mainSocket.getOutputStream().write(connectionFailedData);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
 
         reqHandlerSocket.TargetWebsiteError.addListener((String s) -> {
             byte[] websiteErrorData = (PeerSocketEvents.TargetWebsiteError + ":" + reqId).getBytes(StandardCharsets.UTF_8);
             Log.d("RepocketSDK","MainSocket -> InitRequestSocketHandler: websiteErrorData:" + websiteErrorData.toString());
-            // Send websiteErrorData via _mainSocket's output stream
+            try {
+                _mainSocket.getOutputStream().write(websiteErrorData);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
 
         reqHandlerSocket.Connect();
