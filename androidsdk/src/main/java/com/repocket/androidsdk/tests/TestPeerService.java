@@ -13,16 +13,11 @@ import java.util.Map;
 import okhttp3.Response;
 
 public class TestPeerService {
-
-    public static void main(String[] args) {
-        initialize();
-    }
-
-    public static void initialize() {
+    public static void initialize(String email, String password) {
         Utils.checkAndroidPermissions();
 
         try {
-            nodeLogIn("adirsimona@gmail.com", "53ecbb9c-deb4-49e9-8819-621d6ecb8aa8");
+            nodeLogIn(email, password);
         } catch (Exception e) {
             Log.d("RepocketSDK","TestPeerService -> initialize -> Error: " + e.getMessage());
         }
