@@ -7,6 +7,7 @@ import android.util.Log;
 import com.repocket.androidsdk.classes.ConnectionMonitor;
 import com.repocket.androidsdk.classes.PeerMonitor;
 import com.repocket.androidsdk.classes.VPNWatcher;
+import com.repocket.androidsdk.shared.Callback;
 import com.repocket.androidsdk.shared.Debouncer;
 import com.repocket.androidsdk.shared.EventHandler;
 import com.repocket.androidsdk.shared.MyPlayerPrefs;
@@ -100,9 +101,9 @@ public class PeerService {
             MyPlayerPrefs.SetString("userId", userId);
         }
 
-        resetPeerDebouncer = new Debouncer(this::_resetPeer, 1000);
-        handleConnectionClosedDebouncer = new Debouncer(this::handleConnectionClosedDebounce, 1000);
-        deletePeerDebouncer = new Debouncer(this::deletePeerDebounce, 1000);
+        resetPeerDebouncer = new Debouncer(o -> _resetPeer(), 1000);
+        handleConnectionClosedDebouncer = new Debouncer(o -> handleConnectionClosedDebounce(), 1000);
+        deletePeerDebouncer = new Debouncer(o -> deletePeerDebounce(), 1000);
         localPeerMonitorTimer = new Timer();
         localPeerMonitorTimer.schedule(new TimerTask() {
             @Override
@@ -237,7 +238,7 @@ public class PeerService {
     }
 
     private void _handleConnectionClosed() {
-        handleConnectionClosedDebouncer.call();
+        handleConnectionClosedDebouncer.call("handleConnectionClosedDebouncer");
     }
 
     private void resetPeerDebounce() {
@@ -281,11 +282,11 @@ public class PeerService {
     }
 
     private void registerEventListeners() {
-        Debouncer onSocketConnectionFailedDebounce = new Debouncer(this::OnSocketConnectionFailedDebounce, 1000);
-        Debouncer onReceiveDataDebounce = new Debouncer(this::onReceiveDataDebounce, 1000);
-        Debouncer onConnectionToServerFailedDebounce = new Debouncer(this::onConnectionToServerFailedDebounce, 1000);
-        Debouncer onSocketConnectionCloseDebounce = new Debouncer(this::onSocketConnectionCloseDebounce, 1000);
-        Debouncer onConnectionEstablishedDebounce = new Debouncer(this::onConnectionEstablishedDebounce, 1000);
+        Debouncer onSocketConnectionFailedDebounce = new Debouncer(o -> OnSocketConnectionFailedDebounce(), 1000);
+        Debouncer onReceiveDataDebounce = new Debouncer(o -> onReceiveDataDebounce(), 1000);
+        Debouncer onConnectionToServerFailedDebounce = new Debouncer(o -> onConnectionToServerFailedDebounce(), 1000);
+        Debouncer onSocketConnectionCloseDebounce = new Debouncer(o -> onSocketConnectionCloseDebounce(), 1000);
+        Debouncer onConnectionEstablishedDebounce = new Debouncer(o -> onConnectionEstablishedDebounce(), 1000);
 
         p2PServiceInstance.BeforeStartSocketConnection.addListener(beforeStartSocketConnection -> {
             onConnecting.broadcast("");
@@ -293,17 +294,17 @@ public class PeerService {
             // Register all event listeners here
             p2PServiceInstance.SocketConnectionFailed.addListener(socketConnectionFailed -> {
                 if (!isCreatingPeer && !IsConnectivityChanged) {
-                    onSocketConnectionFailedDebounce.call();
+                    onSocketConnectionFailedDebounce.call("onSocketConnectionFailedDebounce");
                 }
             });
 
-            p2PServiceInstance.ReceiveData.addListener(receiveData -> onReceiveDataDebounce.call());
+            p2PServiceInstance.ReceiveData.addListener(receiveData -> onReceiveDataDebounce.call("onReceiveDataDebounce"));
 
-            p2PServiceInstance.ConnectionToServerFailed.addListener(connectionToServerFailed -> onConnectionToServerFailedDebounce.call());
+            p2PServiceInstance.ConnectionToServerFailed.addListener(connectionToServerFailed -> onConnectionToServerFailedDebounce.call("onConnectionToServerFailedDebounce"));
 
-            p2PServiceInstance.SocketConnectionClose.addListener(socketConnectionClose -> onSocketConnectionCloseDebounce.call());
+            p2PServiceInstance.SocketConnectionClose.addListener(socketConnectionClose -> onSocketConnectionCloseDebounce.call("onSocketConnectionCloseDebounce"));
 
-            p2PServiceInstance.ConnectionEstablished.addListener(connectionEstablished -> onConnectionEstablishedDebounce.call());
+            p2PServiceInstance.ConnectionEstablished.addListener(connectionEstablished -> onConnectionEstablishedDebounce.call("onConnectionEstablishedDebounce"));
         });
     }
 
@@ -453,7 +454,7 @@ public class PeerService {
         if (isForceStop) {
             stop(false);
         } else {
-            deletePeerDebouncer.call();
+            deletePeerDebouncer.call("deletePeerDebouncer");
         }
     }
 

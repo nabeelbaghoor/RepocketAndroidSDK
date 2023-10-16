@@ -39,7 +39,7 @@ public class MainSocket {
         _userId = userId;
 
         _buffer = new byte[1024];
-        _resetConnectionDebouncer = new Debouncer(this::ResetConnectionTimer_Elapsed, 500);
+        _resetConnectionDebouncer = new Debouncer(o -> ResetConnectionTimer_Elapsed(), 500);
     }
 
     public boolean Connect() {
@@ -114,7 +114,7 @@ public class MainSocket {
 
         if (!_peerCloseWithError) {
             Log.d("RepocketSDK","MainSocket -> OnClose: main socket try to re connect " + _peerId);
-            _resetConnectionDebouncer.call();
+            _resetConnectionDebouncer.call("_resetConnectionDebouncer");
         } else {
             Log.d("RepocketSDK","MainSocket -> OnClose: main socket don't renew connection cause of error");
             try {
