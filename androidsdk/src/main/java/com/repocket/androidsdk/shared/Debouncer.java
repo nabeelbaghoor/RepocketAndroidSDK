@@ -1,54 +1,39 @@
 package com.repocket.androidsdk.shared;
 
-import android.os.Handler;
-import android.os.Looper;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
 
 public class Debouncer {
-    private final Runnable action;
-    private final Runnable asyncAction;
+    private Runnable action = null;
+    private Supplier<CompletableFuture<Void>> asyncAction = null;
     private final int delayMilliseconds;
-    private final Timer timer;
+    private Timer timer;
     private CompletableFuture<Void> tcs;
 
     public Debouncer(Runnable action, int delayMilliseconds) {
         this.action = action;
-        this.asyncAction = null;
-        this.delayMilliseconds = delayMilliseconds;
-        this.timer = new Timer();
-    }
-
-    public Debouncer(Runnable action, int delayMilliseconds, Looper looper) {
-        this.action = action;
-        this.asyncAction = null;
         this.delayMilliseconds = delayMilliseconds;
         this.timer = new Timer();
         this.timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                new Handler(looper).post(() -> {
-                    timer.cancel();
-                    tcs = null;
-                    action.run();
-                });
+                timerElapsed();
             }
-        }, delayMilliseconds);
+        }, delayMilliseconds, delayMilliseconds);
     }
 
-    public Debouncer(CompletableFuture<Void> asyncAction, int delayMilliseconds) {
-        this.action = null;
-        this.asyncAction = () -> {
-            try {
-                asyncAction.get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        };
+    public Debouncer(Supplier<CompletableFuture<Void>> asyncAction, int delayMilliseconds) {
+        this.asyncAction = asyncAction;
         this.delayMilliseconds = delayMilliseconds;
         this.timer = new Timer();
+        this.timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                timerElapsed();
+            }
+        }, delayMilliseconds, delayMilliseconds);
     }
 
     public void call() {
@@ -56,15 +41,31 @@ public class Debouncer {
             timer.cancel();
         }
 
+        timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (asyncAction != null) {
-                    asyncAction.run();
-                } else {
-                    action.run();
-                }
+                timerElapsed();
             }
         }, delayMilliseconds);
+    }
+
+    private void timerElapsed() {
+        if (timer != null) {
+            timer.cancel();
+        }
+        tcs = new CompletableFuture<>();
+
+        if (asyncAction != null) {
+            asyncAction.get().thenRun(() -> {
+                action.run();
+                tcs.complete(null);
+            });
+        } else {
+            action.run();
+            tcs.complete(null);
+        }
+
+        tcs = null;
     }
 }
