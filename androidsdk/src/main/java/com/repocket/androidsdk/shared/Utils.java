@@ -132,26 +132,6 @@ public class Utils {
             return "Mobile";
         else
             return "None";
-
-
-//        // TODO: Remove context usage or provide a reference
-//        Context context = null;
-//        // Use Android-specific code to determine connectivity type
-//        ConnectivityManager connectivityManager = (ConnectivityManager)
-//                context.getSystemService(Context.CONNECTIVITY_SERVICE);
-//
-//        if (connectivityManager != null) {
-//            android.net.NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-//            if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
-//                if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-//                    return "Wifi";
-//                } else if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
-//                    return "Mobile";
-//                }
-//            }
-//        }
-//
-//        return "None";
     }
 
     private static String getMacAddress() {
