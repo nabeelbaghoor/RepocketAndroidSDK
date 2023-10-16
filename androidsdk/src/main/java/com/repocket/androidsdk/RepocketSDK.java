@@ -1,10 +1,12 @@
 package com.repocket.androidsdk;
 
+import android.content.Context;
 import android.os.StrictMode;
 import android.util.Log;
 
 import com.repocket.androidsdk.services.PeerService;
 import com.repocket.androidsdk.shared.MyPlayerPrefs;
+import com.repocket.androidsdk.shared.NetworkCheck;
 
 import org.json.JSONException;
 
@@ -15,9 +17,11 @@ public class RepocketSDK {
     private static String _sdkApiKey = "";
     static PeerService _peerService;
 
-    public static void Initialize(String sdkApiKey)
+    public static void Initialize(Context context, String sdkApiKey)
     {
         Log.d("RepocketSDK", "RepocketSDK -> Initialize");
+
+        NetworkCheck.instance().setContext(context);
 
         _sdkApiKey = sdkApiKey;
         MyPlayerPrefs.SetString("sdk-api-key", sdkApiKey);

@@ -125,9 +125,15 @@ public class Utils {
     }
 
     private static String checkConnectivityType() {
-        return "None";
+        NetworkCheck networking = NetworkCheck.instance();
+        if (networking.CheckWifi())
+            return "Wifi";
+        else if (networking.CheckMobile())
+            return "Mobile";
+        else
+            return "None";
 
-        // TODO: Implement it
+
 //        // TODO: Remove context usage or provide a reference
 //        Context context = null;
 //        // Use Android-specific code to determine connectivity type
@@ -147,36 +153,6 @@ public class Utils {
 //
 //        return "None";
     }
-
-//    private static String getMacAddress() {
-//        try {
-//            List<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-//            NetworkInterface activeInterface = null;
-//
-//            for (NetworkInterface networkInterface : networkInterfaces) {
-//                if (networkInterface.isUp()) {
-//                    activeInterface = networkInterface;
-//                    break;
-//                }
-//            }
-//
-//            if (activeInterface != null) {
-//                byte[] macBytes = activeInterface.getHardwareAddress();
-//                if (macBytes != null) {
-//                    StringBuilder macAddressBuilder = new StringBuilder();
-//                    for (byte b : macBytes) {
-//                        macAddressBuilder.append(String.format("%02X", b));
-//                    }
-//                    return macAddressBuilder.toString();
-//                }
-//            }
-//
-//            throw new Exception("No active network interface found.");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
 
     private static String getMacAddress() {
         try {
