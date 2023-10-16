@@ -1,16 +1,24 @@
 package com.repocket.androidsdk.shared;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.os.Build;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 public class NetworkCheck {
     private Context context;
     private static NetworkCheck instance;
     private Activity activity;
     private ConnectivityManager connectivityManager;
+
+    private static final int INTERNET_PERMISSION_REQUEST_CODE = 1;
 
     private NetworkCheck() {
     }
@@ -53,6 +61,25 @@ public class NetworkCheck {
 
     public boolean CheckInternet() {
         return CheckMobile() || CheckWifi();
+    }
+
+    public boolean checkAndRequestInternetPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int permissionStatus = ContextCompat.checkSelfPermission(activity, Manifest.permission.INTERNET);
+
+            if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
+                // Request the INTERNET permission
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.INTERNET},
+                        INTERNET_PERMISSION_REQUEST_CODE);
+                return false;
+            } else {
+                // Permission has already been granted
+                return true;
+            }
+        } else {
+            // Versions prior to Marshmallow don't require runtime permission checks
+            return true;
+        }
     }
 }
 

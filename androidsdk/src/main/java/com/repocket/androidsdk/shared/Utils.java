@@ -24,32 +24,15 @@ import java.util.List;
 import java.util.Map;
 
 public class Utils {
-    private static String connectivityType;
-
-    // Define a constant for the permission request code
-    private static final int INTERNET_PERMISSION_REQUEST_CODE = 1;
     private static Gson gson = new Gson();
 
-
     public static void checkAndroidPermissions() {
-        return;
-        // TODO: Implement it
-//        // TODO: Remove activity usage or provide a reference
-//        Activity activity = new Activity();
-//        // Check if the app has the INTERNET permission
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            int permissionStatus = ContextCompat.checkSelfPermission(activity, Manifest.permission.INTERNET);
-//
-//            if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
-//                // Request the INTERNET permission
-//                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.INTERNET},
-//                        INTERNET_PERMISSION_REQUEST_CODE);
-//            } else {
-//                // Permission has already been granted
-//            }
-//        } else {
-//            // Versions prior to Marshmallow don't require runtime permission checks
-//        }
+        if(NetworkCheck.instance().checkAndRequestInternetPermission()){
+            Log.d("RepocketSDK", "Utils -> checkAndroidPermissions -> Has internet permission");
+        }
+        else {
+            Log.d("RepocketSDK", "Utils -> checkAndroidPermissions -> No Internet permission");
+        }
     }
 
     private static String cyrb53(String str, int seed) {
