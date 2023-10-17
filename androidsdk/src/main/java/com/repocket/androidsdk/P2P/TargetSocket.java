@@ -50,7 +50,7 @@ public class TargetSocket {
                     onConnectedWait();
                     socket.getOutputStream().write(receivedBuffer);
                 } catch (Exception e) {
-                    Log.d("RepocketSDK","TargetSocket -> connect -> targetSocket.Send error: " + e);
+                    Log.d("RepocketSDK","TargetSocket -> connect -> targetSocket.write error: " + e);
                 }
             }
         } catch (Exception e) {
@@ -63,12 +63,8 @@ public class TargetSocket {
     }
 
     private void onConnect() {
-        try {
-            onConnected();
-            socket.getInputStream().read(buffer);
-        } catch (IOException e) {
-            Log.d("RepocketSDK","TargetSocket -> onConnect -> Error connecting to target socket: " + e);
-        }
+        onConnected();
+        ReceiveData();
     }
 
     private void onConnected() {
@@ -105,15 +101,15 @@ public class TargetSocket {
         }
     }
 
-    private void onReceive() {
+    private void ReceiveData() {
         try {
-            int bytesRead = socket.getInputStream().read(buffer);
-            Log.d("RepocketSDK","TargetSocket -> onReceive: bytesRead: " + bytesRead);
+            int bytesRead = socket.getInputStream().read(buffer, 0,buffer.length);
+            Log.d("RepocketSDK","TargetSocket -> ReceiveData: bytesRead: " + bytesRead);
             if (bytesRead > 0) {
                 byte[] receivedData = new byte[bytesRead];
                 System.arraycopy(buffer, 0, receivedData, 0, bytesRead);
                 requestHandlerSocket.getOutputStream().write(receivedData);
-                onConnected();
+                ReceiveData();
             } else {
                 close();
             }

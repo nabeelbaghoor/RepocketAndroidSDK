@@ -2,14 +2,11 @@ package com.repocket.androidsdk.P2P;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -51,8 +48,10 @@ public class RequestHandlerSocket {
             _socket.IsBusy = false;
             // _socket.setReceiveTimeout(5000); // Set receive timeout if needed
             _socket.connect(new InetSocketAddress(_ip, _port));
-            ConnectCallback();
+            Log.d("RepocketSDK", "RequestHandlerSocket -> Connect: new socket req - " + _reqId);
+            ReceiveData();
         } catch (IOException ex) {
+            Log.d("RepocketSDK", "RequestHandlerSocket -> Connect: error when connecting to socket-server: " + ex.getMessage());
             // Handle connection error
             SocketConnectionFailed.broadcast(ex.getMessage());
             CloseSockets();
@@ -65,7 +64,7 @@ public class RequestHandlerSocket {
             _socket.connect(new InetSocketAddress(_ip, _port));
             Log.d("RepocketSDK", "RequestHandlerSocket -> ConnectCallback: new socket req - " + _reqId);
             _socket.getInputStream().read(_buffer, 0, _buffer.length);
-//            _socket.BeginReceive(_buffer, 0, _buffer.length, ReceiveCallback, null);
+//            _socket.BeginReceive(_buffer, 0, _buffer.length, ReceiveData, null);
         } catch (IOException ex) {
             // Handle connection error
             Log.d("RepocketSDK", "RequestHandlerSocket -> ConnectCallback: error when connecting to socket-server: " + ex.getMessage());
@@ -74,7 +73,7 @@ public class RequestHandlerSocket {
         }
     }
 
-    private void ReceiveCallback() {
+    private void ReceiveData() {
         try {
             // Handle data received on the socket
             int bytesRead = _socket.getInputStream().read(_buffer, 0, _buffer.length);
@@ -85,15 +84,15 @@ public class RequestHandlerSocket {
                 // Handle received data
                 HandleRead(receivedData);
 
-                _socket.getInputStream().read(_buffer, 0, _buffer.length);
+                ReceiveData();
             } else {
                 // Handle socket closure
-                Log.d("RepocketSDK", "RequestHandlerSocket -> ReceiveCallback -> closed - " + _reqId);
+                Log.d("RepocketSDK", "RequestHandlerSocket -> ReceiveData -> closed - " + _reqId);
                 CloseSockets();
             }
         } catch (IOException ex) {
             // Handle receive error
-            Log.d("RepocketSDK", "RequestHandlerSocket -> ReceiveCallback -> error: " + ex.getMessage());
+            Log.d("RepocketSDK", "RequestHandlerSocket -> ReceiveData -> error: " + ex.getMessage());
             CloseSockets();
         }
     }
@@ -107,8 +106,11 @@ public class RequestHandlerSocket {
         if (authPacket.equals(request)) {
             String authenticationResponse = "authentication " + _peerId + " " + _reqId;
             byte[] responseBytes = authenticationResponse.getBytes(StandardCharsets.US_ASCII);
-            // Send authentication response using _socket's output stream
-            // Handle sending data
+            try {
+                _socket.getOutputStream().write(responseBytes);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             return;
         }
 
