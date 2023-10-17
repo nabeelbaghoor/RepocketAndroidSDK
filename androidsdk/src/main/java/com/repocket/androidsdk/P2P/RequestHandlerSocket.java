@@ -58,20 +58,20 @@ public class RequestHandlerSocket {
         }
     }
 
-    private void ConnectCallback() {
-        try {
-            // Handle socket connection callback
-            _socket.connect(new InetSocketAddress(_ip, _port));
-            Log.d("RepocketSDK", "RequestHandlerSocket -> ConnectCallback: new socket req - " + _reqId);
-            _socket.getInputStream().read(_buffer, 0, _buffer.length);
-//            _socket.BeginReceive(_buffer, 0, _buffer.length, ReceiveData, null);
-        } catch (IOException ex) {
-            // Handle connection error
-            Log.d("RepocketSDK", "RequestHandlerSocket -> ConnectCallback: error when connecting to socket-server: " + ex.getMessage());
-            SocketConnectionFailed.broadcast(ex.getMessage());
-            CloseSockets();
-        }
-    }
+//    private void ConnectCallback() {
+//        try {
+//            // Handle socket connection callback
+//            _socket.connect(new InetSocketAddress(_ip, _port));
+//            Log.d("RepocketSDK", "RequestHandlerSocket -> ConnectCallback: new socket req - " + _reqId);
+//            _socket.getInputStream().read(_buffer, 0, _buffer.length);
+////            _socket.BeginReceive(_buffer, 0, _buffer.length, ReceiveData, null);
+//        } catch (IOException ex) {
+//            // Handle connection error
+//            Log.d("RepocketSDK", "RequestHandlerSocket -> ConnectCallback: error when connecting to socket-server: " + ex.getMessage());
+//            SocketConnectionFailed.broadcast(ex.getMessage());
+//            CloseSockets();
+//        }
+//    }
 
     private void ReceiveData() {
         try {
