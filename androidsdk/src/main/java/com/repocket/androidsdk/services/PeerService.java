@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -101,7 +103,7 @@ public class PeerService {
             MyPlayerPrefs.SetString("userId", userId);
         }
 
-        resetPeerDebouncer = new Debouncer(o -> _resetPeer(), 1000);
+        resetPeerDebouncer = new Debouncer(o -> resetPeerDebounce(), 1000);
         handleConnectionClosedDebouncer = new Debouncer(o -> handleConnectionClosedDebounce(), 1000);
         deletePeerDebouncer = new Debouncer(o -> deletePeerDebounce(), 1000);
         localPeerMonitorTimer = new Timer();
@@ -242,9 +244,25 @@ public class PeerService {
     }
 
     private void resetPeerDebounce() {
-        if (!isCreatingPeer && IsConnectivityChanged) {
-            _handleConnectionClosed();
-        }
+        Log.d("RepocketSDK", "PeerService(" + localId + ") -> resetPeer");
+        stop(false);
+        onConnecting.broadcast(null);
+
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            try {
+                createPeer();
+            } catch (IOException e) {
+                Log.d("RepocketSDK", "PeerService -> resetPeerDebounce -> IOException: " + e);
+                throw new RuntimeException(e);
+            } catch (JSONException e) {
+                Log.d("RepocketSDK", "PeerService -> resetPeerDebounce -> JSONException: " + e);
+                throw new RuntimeException(e);
+            }
+        }, 3000);
+
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            isResettingPeer = false;
+        }, 5000);
     }
 
     private void OnSocketConnectionFailedDebounce() {
@@ -424,7 +442,7 @@ public class PeerService {
         }
 
         isResettingPeer = true;
-        resetPeerDebounce();
+        resetPeerDebouncer.call("resetPeerDebouncer");
     }
 
     private void handleConnectionClosedDebounce() {
