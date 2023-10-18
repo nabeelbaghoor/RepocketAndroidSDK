@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.repocket.androidsdk.RepocketSDK;
 import com.repocket.androidsdk.classes.ConnectionMonitor;
 import com.repocket.androidsdk.classes.PeerMonitor;
 import com.repocket.androidsdk.classes.VPNWatcher;
@@ -87,6 +88,7 @@ public class PeerService {
         vpnWatcher = new VPNWatcher();
 
         if (firebaseLoginToken == null && peerApiToken == null && sdkApiKey == null) {
+            Log.d("RepocketSDK", )
             throw new RuntimeException("firebaseLoginToken or peerApiToken or sdkApiKey is required");
         }
 
@@ -334,8 +336,10 @@ public class PeerService {
                 put("peerId", peerId);
             }});
         } catch (JSONException e) {
+            Log.d("RepocketSDK", "PeerService -> _markPeerAsAlive -> JSONException: " + e);
             throw new RuntimeException(e);
         } catch (IOException e) {
+            Log.d("RepocketSDK", "PeerService -> _markPeerAsAlive -> IOException: " + e);
             throw new RuntimeException(e);
         }
         boolean isAlive = response.code() == 200;

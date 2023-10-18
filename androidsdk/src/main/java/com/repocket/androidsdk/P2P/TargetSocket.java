@@ -54,10 +54,12 @@ public class TargetSocket {
                     socket.getOutputStream().write(receivedBuffer);
                 } catch (Exception e) {
                     Log.d("RepocketSDK","TargetSocket -> connect -> targetSocket.write error: " + e);
+                    throw new RuntimeException(e);
                 }
             }
         } catch (Exception e) {
             Log.d("RepocketSDK","TargetSocket -> connect -> Error connecting to target socket: " + e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -82,6 +84,7 @@ public class TargetSocket {
                 wait();
             } catch (InterruptedException e) {
                 Log.d("RepocketSDK", "TargetSocket -> onConnectedWait -> InterruptedException: " + e);
+                throw new RuntimeException(e);
             }
         }
     }
@@ -96,6 +99,7 @@ public class TargetSocket {
                     requestHandlerSocket.close();
                 } catch (IOException e) {
                     Log.d("RepocketSDK", "TargetSocket -> close -> IOException: " + e);
+                    throw new RuntimeException(e);
                 }
             }, 3000);
 //            new Thread(() -> {
@@ -108,6 +112,7 @@ public class TargetSocket {
 //            }).start();
         } catch (IOException e) {
             Log.d("RepocketSDK", "TargetSocket -> onConnectedWait -> IOException: " + e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -137,6 +142,7 @@ public class TargetSocket {
             socket.close();
         } catch (IOException e) {
             Log.d("RepocketSDK", "TargetSocket -> onError -> IOException: " + e);
+            throw new RuntimeException(e);
         }
     }
 }

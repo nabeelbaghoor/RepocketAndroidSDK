@@ -41,8 +41,10 @@ public class RepocketSDK {
         try {
             _peerService.createPeer();
         } catch (IOException e) {
+            Log.d("RepocketSDK", "RepocketSDK -> CreatePeer -> IOException: " + e);
             throw new RuntimeException(e);
         } catch (JSONException e) {
+            Log.d("RepocketSDK", "RepocketSDK -> CreatePeer -> JSONException: " + e);
             throw new RuntimeException(e);
         }
     }

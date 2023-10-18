@@ -95,8 +95,8 @@ public class MainSocket {
                 try {
                     HandleRead(receivedBytes);
                 } catch (Exception e) {
-                    Log.d("RepocketSDK","MainSocket -> ReceiveCallback -> e:"+ e.getMessage());
-                    throw e;
+                    Log.d("RepocketSDK","MainSocket -> ReceiveCallback -> e:"+ e);
+                    throw new RuntimeException(e);
                 }
 
                 ReceiveData();
@@ -141,6 +141,7 @@ public class MainSocket {
             try {
                 _mainSocket.getOutputStream().write(authData);
             } catch (IOException e) {
+                Log.d("RepocketSDK","MainSocket -> HandleRead -> e:"+ e);
                 throw new RuntimeException(e);
             }
             return;
@@ -159,6 +160,7 @@ public class MainSocket {
             try {
                 _mainSocket.getOutputStream().write(pongData);
             } catch (IOException e) {
+                Log.d("RepocketSDK","MainSocket -> HandleRead -> e:"+ e);
                 throw new RuntimeException(e);
             }
             return;
@@ -190,6 +192,7 @@ public class MainSocket {
             try {
                 _mainSocket.getOutputStream().write(connectionFailedData);
             } catch (IOException e) {
+                Log.d("RepocketSDK","MainSocket -> InitRequestSocketHandler -> SocketConnectionFailed block -> e:"+ e);
                 throw new RuntimeException(e);
             }
         });
@@ -200,6 +203,7 @@ public class MainSocket {
             try {
                 _mainSocket.getOutputStream().write(websiteErrorData);
             } catch (IOException e) {
+                Log.d("RepocketSDK","MainSocket -> InitRequestSocketHandler -> TargetWebsiteError block -> e:"+ e);
                 throw new RuntimeException(e);
             }
         });
@@ -223,6 +227,7 @@ public class MainSocket {
             try {
                 _mainSocket.setTcpNoDelay(true);
             } catch (SocketException e) {
+                Log.d("RepocketSDK", "MainSocket -> ResetConnectionTimer_Elapsed -> setTcpNoDelay block -> e: " + e);
                 throw new RuntimeException(e);
             }
             _mainSocket.RetryConnectionCounter++;
