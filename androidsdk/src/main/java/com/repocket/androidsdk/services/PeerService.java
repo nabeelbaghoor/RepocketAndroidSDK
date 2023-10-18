@@ -88,7 +88,7 @@ public class PeerService {
         vpnWatcher = new VPNWatcher();
 
         if (firebaseLoginToken == null && peerApiToken == null && sdkApiKey == null) {
-            Log.d("RepocketSDK", )
+            Log.d("RepocketSDK", "PeerService -> firebaseLoginToken or peerApiToken or sdkApiKey is required");
             throw new RuntimeException("firebaseLoginToken or peerApiToken or sdkApiKey is required");
         }
 
