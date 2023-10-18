@@ -46,6 +46,7 @@ public class RequestHandlerSocket {
             _socket.Type = "main";
             _socket.Uid = new Random().nextInt();
             _socket.IsBusy = false;
+            _socket.setTcpNoDelay(true);
             // _socket.setReceiveTimeout(5000); // Set receive timeout if needed
             _socket.connect(new InetSocketAddress(_ip, _port));
             Log.d("RepocketSDK", "RequestHandlerSocket -> Connect: new socket req - " + _reqId);
@@ -103,13 +104,14 @@ public class RequestHandlerSocket {
         final String remoteSocketClosePacket = PeerSocketEvents.RemoteSocketClosed;
         final String httpFirstLineRegex = "^(GET|HEAD|POST|PUT|DELETE|OPTIONS|TRACE|PATCH|CONNECT) (\\S+\\s+HTTP/1\\.(0|1)(\\r\\n([A-Za-z0-9-_]+:\\s+[\\S ]+)?)+\\r\\n\\r\\n.*)*$";
 
+        Log.d("RepocketSDK", "RequestHandlerSocket -> request: " + request);
         if (authPacket.equals(request)) {
             String authenticationResponse = "authentication " + _peerId + " " + _reqId;
             byte[] responseBytes = authenticationResponse.getBytes(StandardCharsets.US_ASCII);
             try {
                 _socket.getOutputStream().write(responseBytes);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                Log.d("RepocketSDK", "RequestHandlerSocket -> authPacket block -> IOException: " + e);
             }
             return;
         }
@@ -119,7 +121,7 @@ public class RequestHandlerSocket {
                 try {
                     _targetSocket.socket.close();
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    Log.d("RepocketSDK", "RequestHandlerSocket -> remoteSocketClosePacket block -> IOException: " + e);
                 }
             }
         } else if (_targetSocket != null) {
@@ -135,15 +137,17 @@ public class RequestHandlerSocket {
         }
 
         if (request.startsWith("CONNECT") || request.contains("HTTP/1.1") || Pattern.matches(httpFirstLineRegex, request)) {
+            // http/https
             _socket.IsBusy = true;
             HttpProtocolHandler(request, data);
         } else if (IsSocks5Request(data)) {
+            // socks5
             _isSocks5Req = true;
             _socks5TargetSocket = new Socket5Handler(_socket, _port, _ip, "8.8.8.8"); // TODO: hardcoded DNS
             try {
                 _socks5TargetSocket.handle(data);
             } catch (UnknownHostException e) {
-                throw new RuntimeException(e);
+                Log.d("RepocketSDK", "RequestHandlerSocket -> IsSocks5Request() block -> UnknownHostException: " + e);
             }
         }
     }
@@ -167,6 +171,10 @@ public class RequestHandlerSocket {
             return false;
         }
 
+        // Check if buffer length is at least 10 bytes
+        // Check SOCKS version
+        // Check command code
+        // Check reserved byte
         if (buffer.length < 10 || buffer[0] != 5 || buffer[1] != 1 || buffer[2] != 0) {
             return false;
         }

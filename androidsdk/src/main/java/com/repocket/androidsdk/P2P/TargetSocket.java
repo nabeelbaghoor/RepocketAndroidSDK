@@ -1,5 +1,7 @@
 package com.repocket.androidsdk.P2P;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.repocket.androidsdk.shared.EventHandler;
@@ -7,6 +9,7 @@ import com.repocket.androidsdk.shared.EventHandler;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -16,7 +19,7 @@ public class TargetSocket {
     private final byte[] receivedBuffer;
     private final Map<String, Object> request;
     private final Socket requestHandlerSocket;
-    public final Socket socket;
+    public Socket socket;
     public EventHandler<Exception> targetWebsiteError = new EventHandler<>();
 
     public TargetSocket(Socket requestHandlerSocket, Map<String, Object> request, byte[] buffer) {
@@ -24,7 +27,6 @@ public class TargetSocket {
         this.request = request;
         this.receivedBuffer = buffer;
         this.buffer = new byte[8192];
-        this.socket = new Socket();
     }
 
     public void connect() {
@@ -33,6 +35,7 @@ public class TargetSocket {
         int port = request.containsKey("port") ? Integer.parseInt(request.get("port").toString()) : 80;
 
         try {
+            socket = new Socket();
             socket.connect(new InetSocketAddress(request.get("host").toString(), port));
             socket.setSoTimeout(30000);
             socket.setTcpNoDelay(true);
@@ -41,7 +44,7 @@ public class TargetSocket {
 
             if (isHttps()) {
                 String response = request.get("httpVersion") + " 200 Connection Established\r\n\r\n";
-                byte[] responseBuffer = response.getBytes();
+                byte[] responseBuffer = response.getBytes(StandardCharsets.US_ASCII);
                 requestHandlerSocket.getOutputStream().write(responseBuffer);
             }
 
@@ -78,7 +81,7 @@ public class TargetSocket {
             try {
                 wait();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.d("RepocketSDK", "TargetSocket -> onConnectedWait -> InterruptedException: " + e);
             }
         }
     }
@@ -88,20 +91,29 @@ public class TargetSocket {
         try {
             socket.close();
             // The requestHandlerSocket should already be closed, but we verify it here
-            new Thread(() -> {
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 try {
-                    Thread.sleep(3000);
                     requestHandlerSocket.close();
-                } catch (InterruptedException | IOException e) {
-                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.d("RepocketSDK", "TargetSocket -> close -> IOException: " + e);
                 }
-            }).start();
+            }, 3000);
+//            new Thread(() -> {
+//                try {
+//                    Thread.sleep(3000);
+//                    requestHandlerSocket.close();
+//                } catch (InterruptedException | IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }).start();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.d("RepocketSDK", "TargetSocket -> onConnectedWait -> IOException: " + e);
         }
     }
 
     private void ReceiveData() {
+        if (!socket.isConnected()) return;
+
         try {
             int bytesRead = socket.getInputStream().read(buffer, 0,buffer.length);
             Log.d("RepocketSDK","TargetSocket -> ReceiveData: bytesRead: " + bytesRead);
@@ -124,7 +136,7 @@ public class TargetSocket {
         try {
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.d("RepocketSDK", "TargetSocket -> onError -> IOException: " + e);
         }
     }
 }

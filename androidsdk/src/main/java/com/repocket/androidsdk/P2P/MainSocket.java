@@ -9,6 +9,7 @@ import com.repocket.androidsdk.shared.EventHandler;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
@@ -56,6 +57,7 @@ public class MainSocket {
             return true;
         } catch (IOException ex) {
             Log.d("RepocketSDK", "MainSocket -> Connect: Main socket connect error:" + ex.getMessage());
+            _peerCloseWithError = true;
             SocketConnectionFailed.broadcast(ex);
             return false;
         }
@@ -104,7 +106,6 @@ public class MainSocket {
             }
         } catch (IOException ex) {
             Log.d("RepocketSDK","MainSocket -> ReceiveCallback: Main socket receive error: "+ex.getMessage());
-            _peerCloseWithError = true;
             SocketConnectionFailed.broadcast(ex);
         }
     }
@@ -218,6 +219,14 @@ public class MainSocket {
     private void ResetConnectionTimer_Elapsed() {
         if (_isReconnecting) return;
         if (_mainSocket.RetryConnectionCounter < MaxSocketRetries) {
+            EnableKeepAlive(_mainSocket);
+            try {
+                _mainSocket.setTcpNoDelay(true);
+            } catch (SocketException e) {
+                throw new RuntimeException(e);
+            }
+            _mainSocket.RetryConnectionCounter++;
+            Log.d("RepocketSDK", "MainSocket -> ResetConnectionTimer_Elapsed -> before reconnect: " + _ip);
             try {
                 _isReconnecting = true;
                 _mainSocket.connect(new InetSocketAddress(_ip, _port));
