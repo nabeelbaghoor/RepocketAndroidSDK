@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import com.repocket.androidsdk.shared.Callback;
 import com.repocket.androidsdk.shared.EventHandler;
 
 import java.io.IOException;
@@ -40,7 +41,8 @@ public class TargetSocket {
             socket.setSoTimeout(30000);
             socket.setTcpNoDelay(true);
 
-            onConnect();
+            Runnable runnable = () -> ReceiveData();
+            new Thread(runnable).start();
 
             if (isHttps()) {
                 String response = request.get("httpVersion") + " 200 Connection Established\r\n\r\n";
@@ -50,10 +52,9 @@ public class TargetSocket {
 
             if (!isHttps()) {
                 try {
-                    onConnectedWait();
                     socket.getOutputStream().write(receivedBuffer);
                 } catch (Exception e) {
-                    Log.d("RepocketSDK","TargetSocket -> connect -> targetSocket.write error: " + e);
+                    Log.d("RepocketSDK", "TargetSocket -> connect -> targetSocket.write error: " + e);
                     throw new RuntimeException(e);
                 }
             }
@@ -67,27 +68,27 @@ public class TargetSocket {
         return request.get("method").toString().toLowerCase().equals("connect");
     }
 
-    private void onConnect() {
-        onConnected();
-        ReceiveData();
-    }
-
-    private void onConnected() {
-        synchronized (this) {
-            notify();
-        }
-    }
-
-    private void onConnectedWait() {
-        synchronized (this) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                Log.d("RepocketSDK", "TargetSocket -> onConnectedWait -> InterruptedException: " + e);
-                throw new RuntimeException(e);
-            }
-        }
-    }
+//    private void onConnect() {
+//        onConnected();
+//        ReceiveData();
+//    }
+//
+//    private void onConnected() {
+//        synchronized (this) {
+//            notify();
+//        }
+//    }
+//
+//    private void onConnectedWait() {
+//        synchronized (this) {
+//            try {
+//                wait();
+//            } catch (InterruptedException e) {
+//                Log.d("RepocketSDK", "TargetSocket -> onConnectedWait -> InterruptedException: " + e);
+//                throw new RuntimeException(e);
+//            }
+//        }
+//    }
 
     public void close() {
         Log.d("RepocketSDK","TargetSocket -> close: onSocketCloseEvent");
@@ -102,14 +103,6 @@ public class TargetSocket {
                     throw new RuntimeException(e);
                 }
             }, 3000);
-//            new Thread(() -> {
-//                try {
-//                    Thread.sleep(3000);
-//                    requestHandlerSocket.close();
-//                } catch (InterruptedException | IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }).start();
         } catch (IOException e) {
             Log.d("RepocketSDK", "TargetSocket -> onConnectedWait -> IOException: " + e);
             throw new RuntimeException(e);

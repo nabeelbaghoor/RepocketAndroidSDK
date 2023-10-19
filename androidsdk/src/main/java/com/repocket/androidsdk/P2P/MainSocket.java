@@ -53,7 +53,8 @@ public class MainSocket {
             _mainSocket.setTcpNoDelay(true);
             EnableKeepAlive(_mainSocket);
             _mainSocket.connect(new InetSocketAddress(_ip, _port));
-            ReceiveData();
+            Runnable runnable = () -> ReceiveData();
+            new Thread(runnable).start();
             return true;
         } catch (IOException ex) {
             Log.d("RepocketSDK", "MainSocket -> Connect: Main socket connect error:" + ex.getMessage());

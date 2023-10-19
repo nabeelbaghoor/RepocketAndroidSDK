@@ -30,10 +30,10 @@ public class RepocketSDK {
         StrictMode.setThreadPolicy(policy);
 
         _peerService = new PeerService(null,null,_sdkApiKey, null);
-        _peerService.onConnected.addListener(x -> Log.d("RepocketSDK","RepocketSDK -> Initialize -> peer connected"));
-        _peerService.onConnecting.addListener(x -> Log.d("RepocketSDK","RepocketSDK -> Initialize -> peer resetting"));
-        _peerService.onDisconnected.addListener(x -> Log.d("RepocketSDK","RepocketSDK -> Initialize -> peer disconnected"));
-        _peerService.onRefreshTokenRequired.addListener(x -> Log.d("RepocketSDK","RepocketSDK -> Initialize -> peer refresh_token_required")); ;
+        _peerService.onConnected.addListener(x -> Log.d("RepocketSDK","RepocketSDK -> Initialize -> peer connected: " + x));
+        _peerService.onConnecting.addListener(x -> Log.d("RepocketSDK","RepocketSDK -> Initialize -> peer resetting: " + x));
+        _peerService.onDisconnected.addListener(x -> Log.d("RepocketSDK","RepocketSDK -> Initialize -> peer disconnected: " + x));
+        _peerService.onRefreshTokenRequired.addListener(x -> Log.d("RepocketSDK","RepocketSDK -> Initialize -> peer refresh_token_required: " + x)); ;
     }
 
     public static void CreatePeer()

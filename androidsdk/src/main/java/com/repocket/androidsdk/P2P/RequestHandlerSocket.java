@@ -50,7 +50,8 @@ public class RequestHandlerSocket {
             // _socket.setReceiveTimeout(5000); // Set receive timeout if needed
             _socket.connect(new InetSocketAddress(_ip, _port));
             Log.d("RepocketSDK", "RequestHandlerSocket -> Connect: new socket req - " + _reqId);
-            ReceiveData();
+            Runnable runnable = () -> ReceiveData();
+            new Thread(runnable).start();
         } catch (IOException ex) {
             Log.d("RepocketSDK", "RequestHandlerSocket -> Connect: error when connecting to socket-server: " + ex.getMessage());
             // Handle connection error
@@ -128,7 +129,7 @@ public class RequestHandlerSocket {
             }
         } else if (_targetSocket != null) {
             try {
-                SocketHelper.writeToSocket(_targetSocket.socket, data);
+                SocketHelper.writeToSocket(_targetSocket.socket.getChannel(), data);
             } catch (IOException ex) {
                 Log.d("RepocketSDK", "RequestHandlerSocket -> HandleRead -> TargetSocket send error: " + ex.getMessage());
             }

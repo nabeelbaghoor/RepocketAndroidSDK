@@ -39,10 +39,10 @@ public class TestPeerService {
 
                 PeerService peerService = new PeerService(null,token, userId, apiKey);
 
-                peerService.onConnected.addListener(x -> Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> peer connected"));
-                peerService.onConnecting.addListener(x -> Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> peer resetting"));
-                peerService.onDisconnected.addListener(x -> Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> peer disconnected"));
-                peerService.onRefreshTokenRequired.addListener(x -> Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> peer refresh_token_required"));
+                peerService.onConnected.addListener(x -> Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> peer connected: " + x));
+                peerService.onConnecting.addListener(x -> Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> peer resetting: " + x));
+                peerService.onDisconnected.addListener(x -> Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> peer disconnected: " + x));
+                peerService.onRefreshTokenRequired.addListener(x -> Log.d("RepocketSDK","TestPeerService -> nodeLogIn -> peer refresh_token_required: " + x));
 
                 peerService.createPeer();
             } else {
