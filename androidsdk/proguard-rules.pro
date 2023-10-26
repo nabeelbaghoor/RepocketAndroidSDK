@@ -32,6 +32,9 @@
     native <methods>;
 }
 
+-keepnames class com.repocket.androidsdk.RepocketSDK {public *;}
+-keep class com.repocket.androidsdk.types.Types {public *;}
+
 # Preserve the special static methods that are required in all enumeration
 # classes.
 
