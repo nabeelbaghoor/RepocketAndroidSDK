@@ -51,7 +51,7 @@ public class HttpService {
         runtimeInfo = Global.GetRuntimeInfo();
     }
 
-    public Response GetAsync(String url, Map<String, Object> parameters) throws IOException, JSONException {
+    public Response GetAsync(String url, Map<String, Object> parameters) {
         if (parameters != null && !parameters.isEmpty()) {
             StringBuilder query = new StringBuilder();
             for (Map.Entry<String, Object> entry : parameters.entrySet()) {
@@ -69,7 +69,7 @@ public class HttpService {
         return handleResponse(request);
     }
 
-    public Response PostAsync(String url, Object payload) throws IOException, JSONException {
+    public Response PostAsync(String url, Object payload) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new JSONObject((Map) payload).toString());
         Request request = new Request.Builder()
                 .url(url)
@@ -78,7 +78,7 @@ public class HttpService {
         return handleResponse(request);
     }
 
-    public Response PutAsync(String url, Object payload) throws IOException, JSONException {
+    public Response PutAsync(String url, Object payload) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new JSONObject((Map) payload).toString());
         Request request = new Request.Builder()
                 .url(url)
@@ -87,7 +87,7 @@ public class HttpService {
         return handleResponse(request);
     }
 
-    public Response DeleteAsync(String url, Object data) throws IOException, JSONException {
+    public Response DeleteAsync(String url, Object data) {
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), new JSONObject((Map) data).toString());
         Request request = new Request.Builder()
                 .url(url)
@@ -125,8 +125,14 @@ public class HttpService {
         }
     }
 
-    private Response handleResponse(Request request) throws IOException, JSONException {
-        Response response = httpClient.newCall(request).execute();
+    private Response handleResponse(Request request) {
+        Response response = null;
+        try {
+            response = httpClient.newCall(request).execute();
+        } catch (IOException e) {
+            Log.d("RepocketSDK", "HttpService -> handleResponse -> IOException: " + e);
+            throw new RuntimeException(e);
+        }
 //        String responseBody = response.body().string();
 //
 //        JSONObject data = null;
@@ -144,11 +150,16 @@ public class HttpService {
         return response;
     }
 
-    private void handleResponseAsync(JSONObject data) throws JSONException {
+    private void handleResponseAsync(JSONObject data) {
         if (data != null && data.has("message") && data.has("showNotification")) {
-            String title = data.getJSONObject("message").optString("title");
-            String body = data.getJSONObject("message").optString("body");
-            String variant = data.getJSONObject("message").optString("variant", "success");
+            try {
+                String title = data.getJSONObject("message").optString("title");
+                String body = data.getJSONObject("message").optString("body");
+                String variant = data.getJSONObject("message").optString("variant", "success");
+            } catch (JSONException e) {
+                Log.d("RepocketSDK", "HttpService -> handleResponseAsync -> JSONException: " + e);
+                throw new RuntimeException(e);
+            }
 
             // notificationService.openNotification({
             //   title: title,

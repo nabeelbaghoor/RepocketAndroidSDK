@@ -119,7 +119,7 @@ public class PeerService {
         _settings.setPeerMonitorRate(120000);
     }
 
-    public void createPeer() throws IOException, JSONException {
+    public void createPeer() {
         if (isCreatingPeer || isPeerActive) {
             return;
         }
@@ -169,7 +169,13 @@ public class PeerService {
             }});
 
             if (response.isSuccessful()) {
-                String json = response.body().string();
+                String json = null;
+                try {
+                    json = response.body().string();
+                } catch (IOException e) {
+                    Log.d("RepocketSDK", "PeerService -> createPeer -> IOException: " + e);
+                    throw new RuntimeException(e);
+                }
                 Types.CreatePeerResponse createPeer = Utils.fromJson(json, Types.CreatePeerResponse.class);
 
                 peerId = createPeer != null ? createPeer.data._id : null;
@@ -213,9 +219,15 @@ public class PeerService {
         isCreatingPeer = false;
     }
 
-    private Types.PeerConfigResponse getPeerConfig() throws IOException, JSONException {
+    private Types.PeerConfigResponse getPeerConfig() {
         Response response = Services.PeerManagerApiService.Get(PeerConfigEndpoint, null);
-        String responseData = response.body().string();
+        String responseData = null;
+        try {
+            responseData = response.body().string();
+        } catch (IOException e) {
+            Log.d("RepocketSDK", "PeerService -> getPeerConfig -> IOException: " + e);
+            throw new RuntimeException(e);
+        }
 
         if (response.isSuccessful()) {
             return Utils.fromJson(responseData, Types.PeerConfigResponse.class);
@@ -225,19 +237,25 @@ public class PeerService {
         }
     }
 
-    private Types.IpInfo getIpInfo() throws IOException {
+    private Types.IpInfo getIpInfo() {
         Request request = new Request.Builder()
                 .url("http://ip-api.com/json")
                 .get()
                 .build();
-        Response response = httpClient.newCall(request).execute();
-        String responseData = response.body().string();
+        Response response = null;
+        try {
+            response = httpClient.newCall(request).execute();
+            String responseData = response.body().string();
 
-        if (response.isSuccessful()) {
-            return Utils.fromJson(responseData, Types.IpInfo.class);
-        } else {
-            Log.d("RepocketSDK", "PeerService -> getIpInfo -> Something went wrong");
-            return null;
+            if (response.isSuccessful()) {
+                return Utils.fromJson(responseData, Types.IpInfo.class);
+            } else {
+                Log.d("RepocketSDK", "PeerService -> getIpInfo -> Something went wrong");
+                return null;
+            }
+        } catch (IOException e) {
+            Log.d("RepocketSDK", "PeerService -> getIpInfo -> IOException: " + e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -250,21 +268,8 @@ public class PeerService {
         stop(false);
         onConnecting.broadcast(null);
 
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            try {
-                createPeer();
-            } catch (IOException e) {
-                Log.d("RepocketSDK", "PeerService -> resetPeerDebounce -> IOException: " + e);
-                throw new RuntimeException(e);
-            } catch (JSONException e) {
-                Log.d("RepocketSDK", "PeerService -> resetPeerDebounce -> JSONException: " + e);
-                throw new RuntimeException(e);
-            }
-        }, 3000);
-
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            isResettingPeer = false;
-        }, 5000);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> createPeer(), 3000);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> isResettingPeer = false, 5000);
     }
 
     private void OnSocketConnectionFailedDebounce() {
@@ -331,17 +336,9 @@ public class PeerService {
     private void _markPeerAsAlive() {
         Log.d("RepocketSDK", "PeerService -> markPeerAsAlive -> start - " + peerId);
         Response response = null;
-        try {
-            response = Services.PeerManagerApiService.Post("peer/markPeerAsAlive", new HashMap<String, Object>() {{
-                put("peerId", peerId);
-            }});
-        } catch (JSONException e) {
-            Log.d("RepocketSDK", "PeerService -> _markPeerAsAlive -> JSONException: " + e);
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            Log.d("RepocketSDK", "PeerService -> _markPeerAsAlive -> IOException: " + e);
-            throw new RuntimeException(e);
-        }
+        response = Services.PeerManagerApiService.Post("peer/markPeerAsAlive", new HashMap<String, Object>() {{
+            put("peerId", peerId);
+        }});
         boolean isAlive = response.code() == 200;
         if (isAlive) {
             Log.d("RepocketSDK", "PeerService -> _markPeerAsAlive -> markPeerAsAlive -> isAlive");
