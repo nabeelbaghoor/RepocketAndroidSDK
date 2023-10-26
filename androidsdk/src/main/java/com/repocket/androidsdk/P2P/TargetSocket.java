@@ -38,7 +38,7 @@ public class TargetSocket {
         try {
             socket = new Socket();
             socket.connect(new InetSocketAddress(request.get("host").toString(), port));
-//            socket.setSoTimeout(30000);
+            socket.setSoTimeout(0);
             socket.setTcpNoDelay(true);
 
             Runnable runnable = () -> ReceiveData();
@@ -110,7 +110,7 @@ public class TargetSocket {
     }
 
     private void ReceiveData() {
-        if (!socket.isConnected()) return;
+        if (socket.isClosed()) return;
 
         try {
             int bytesRead = socket.getInputStream().read(buffer, 0,buffer.length);
@@ -118,7 +118,11 @@ public class TargetSocket {
             if (bytesRead > 0) {
                 byte[] receivedData = new byte[bytesRead];
                 System.arraycopy(buffer, 0, receivedData, 0, bytesRead);
-                requestHandlerSocket.getOutputStream().write(receivedData);
+                try {
+                    requestHandlerSocket.getOutputStream().write(receivedData);
+                } catch (Exception e){
+                    Log.d("RepocketSDK", "TargetSocket -> ReceiveData -> Exception in requestHandlerSocket: " + e);
+                }
                 ReceiveData();
             } else {
                 close();

@@ -128,11 +128,7 @@ public class RequestHandlerSocket {
                 }
             }
         } else if (_targetSocket != null) {
-            try {
-                SocketHelper.writeToSocket(_targetSocket.socket.getChannel(), data);
-            } catch (IOException ex) {
-                Log.d("RepocketSDK", "RequestHandlerSocket -> HandleRead -> TargetSocket send error: " + ex.getMessage());
-            }
+            SocketHelper.writeToSocket(_targetSocket.socket, data);
             return;
         } else if (_isSocks5Req) {
             // Handle SOCKS5 events
@@ -147,12 +143,7 @@ public class RequestHandlerSocket {
             // socks5
             _isSocks5Req = true;
             _socks5TargetSocket = new Socket5Handler(_socket, _port, _ip, "8.8.8.8"); // TODO: hardcoded DNS
-            try {
-                _socks5TargetSocket.handle(data);
-            } catch (UnknownHostException e) {
-                Log.d("RepocketSDK", "RequestHandlerSocket -> IsSocks5Request() block -> UnknownHostException: " + e);
-                throw new RuntimeException(e);
-            }
+            _socks5TargetSocket.handle(data);
         }
     }
 

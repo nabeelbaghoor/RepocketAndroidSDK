@@ -32,7 +32,7 @@ public class Socket5Handler {
         this.proxyBuffer = new byte[8192];
     }
 
-    public void handle(byte[] data) throws UnknownHostException {
+    public void handle(byte[] data) {
         Log.d("RepocketSDK","Socket5Handler -> handle: Handling SOCKS5 incoming request");
 
         if (data[0] != 0x05) {
@@ -65,7 +65,7 @@ public class Socket5Handler {
         }
     }
 
-    private void handleConnectCommand(byte[] data) throws UnknownHostException {
+    private void handleConnectCommand(byte[] data) {
         if (data[2] != 0x00) {
             Log.d("RepocketSDK", "Socket5Handler -> handleConnectCommand: RESERVED should be 0x00");
         }
@@ -75,7 +75,12 @@ public class Socket5Handler {
 
         switch (data[3]) {
             case 0x01: // IPv4
-                dstHost = InetAddress.getByAddress(Arrays.copyOfRange(data, 4, 8)).getHostAddress();
+                try {
+                    dstHost = InetAddress.getByAddress(Arrays.copyOfRange(data, 4, 8)).getHostAddress();
+                } catch (UnknownHostException e) {
+                    Log.d("RepocketSDK", "Socket5Handler -> handleConnectCommand -> UnknownHostException: " + e);
+                    throw new RuntimeException(e);
+                }
                 dstPort = ((data[8] & 0xFF) << 8) | (data[9] & 0xFF);
                 createConnection(dstHost, dstPort, 3);
                 break;
@@ -95,7 +100,12 @@ public class Socket5Handler {
                 break;
             case 0x04: // IPv6
                 byte[] addrBytes = Arrays.copyOfRange(data, 4, 20);
-                dstHost = InetAddress.getByAddress(addrBytes).getHostAddress();
+                try {
+                    dstHost = InetAddress.getByAddress(addrBytes).getHostAddress();
+                } catch (UnknownHostException e) {
+                    Log.d("RepocketSDK", "Socket5Handler -> handleConnectCommand -> UnknownHostException: " + e);
+                    throw new RuntimeException(e);
+                }
                 dstPort = ((data[20] & 0xFF) << 8) | (data[21] & 0xFF);
                 createConnection(dstHost, dstPort, 3);
                 break;

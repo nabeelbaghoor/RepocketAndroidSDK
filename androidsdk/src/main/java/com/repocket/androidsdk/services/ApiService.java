@@ -20,19 +20,19 @@ public class ApiService {
         _httpService = new HttpService();
     }
 
-    public Response Get(String endpoint, Map<String, Object> parameters) throws JSONException, IOException {
+    public Response Get(String endpoint, Map<String, Object> parameters) {
         return _httpService.GetAsync(_baseApi + endpoint, parameters);
     }
 
-    public Response Post(String endpoint, Map<String, Object> payload) throws JSONException, IOException {
+    public Response Post(String endpoint, Map<String, Object> payload) {
         return _httpService.PostAsync(_baseApi + endpoint, payload);
     }
 
-    public Response Put(String endpoint, Map<String, Object> payload) throws JSONException, IOException {
+    public Response Put(String endpoint, Map<String, Object> payload) {
         return _httpService.PutAsync(_baseApi + endpoint, payload);
     }
 
-    public Response Delete(String endpoint, Map<String, Object> data) throws JSONException, IOException {
+    public Response Delete(String endpoint, Map<String, Object> data) {
         return _httpService.DeleteAsync(_baseApi + endpoint, data);
     }
 }
