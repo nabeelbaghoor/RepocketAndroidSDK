@@ -38,7 +38,7 @@ public class TargetSocket {
         try {
             socket = new Socket();
             socket.connect(new InetSocketAddress(request.get("host").toString(), port));
-            socket.setSoTimeout(30000);
+//            socket.setSoTimeout(30000);
             socket.setTcpNoDelay(true);
 
             Runnable runnable = () -> ReceiveData();
