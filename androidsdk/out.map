@@ -2,8 +2,8 @@
 # compiler_version: 8.1.65
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.2"}
-# pg_map_id: f906197
-# pg_map_hash: SHA-256 f906197af036268ce406fc1874a2e8c84e6f4f4a6f40b9aeaf7e17b38b03689b
+# pg_map_id: 5374847
+# pg_map_hash: SHA-256 5374847d5ec138263d6cfbaf3212c06e0822584e50deb071d461d7fab2a1b534
 com.repocket.androidsdk.P2P.MainSocket -> a.a:
 # {"id":"sourceFile","fileName":"MainSocket.java"}
     int _port -> a
@@ -215,32 +215,33 @@ com.repocket.androidsdk.RepocketSDK -> com.repocket.androidsdk.RepocketSDK:
     8:9:void Initialize(android.content.Context,java.lang.String):26:27 -> Initialize
     10:10:void com.repocket.androidsdk.shared.MyPlayerPrefs.SetString(java.lang.String,java.lang.String):19:19 -> Initialize
     10:10:void Initialize(android.content.Context,java.lang.String):27 -> Initialize
-    11:15:void Initialize(android.content.Context,java.lang.String):29:33 -> Initialize
+    11:12:void Initialize(android.content.Context,java.lang.String):32:33 -> Initialize
+    13:13:java.util.function.Consumer com.repocket.androidsdk.shared.EventHandler.addListener(java.util.function.Consumer):11:11 -> Initialize
+    13:13:void Initialize(android.content.Context,java.lang.String):33 -> Initialize
+      # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
+    14:14:java.util.function.Consumer com.repocket.androidsdk.shared.EventHandler.addListener(java.util.function.Consumer):11:11 -> Initialize
+    14:14:void Initialize(android.content.Context,java.lang.String):33 -> Initialize
+    15:15:void Initialize(android.content.Context,java.lang.String):34:34 -> Initialize
     16:16:java.util.function.Consumer com.repocket.androidsdk.shared.EventHandler.addListener(java.util.function.Consumer):11:11 -> Initialize
-    16:16:void Initialize(android.content.Context,java.lang.String):33 -> Initialize
+    16:16:void Initialize(android.content.Context,java.lang.String):34 -> Initialize
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
     17:17:java.util.function.Consumer com.repocket.androidsdk.shared.EventHandler.addListener(java.util.function.Consumer):11:11 -> Initialize
-    17:17:void Initialize(android.content.Context,java.lang.String):33 -> Initialize
-    18:18:void Initialize(android.content.Context,java.lang.String):34:34 -> Initialize
+    17:17:void Initialize(android.content.Context,java.lang.String):34 -> Initialize
+    18:18:void Initialize(android.content.Context,java.lang.String):35:35 -> Initialize
     19:19:java.util.function.Consumer com.repocket.androidsdk.shared.EventHandler.addListener(java.util.function.Consumer):11:11 -> Initialize
-    19:19:void Initialize(android.content.Context,java.lang.String):34 -> Initialize
+    19:19:void Initialize(android.content.Context,java.lang.String):35 -> Initialize
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
     20:20:java.util.function.Consumer com.repocket.androidsdk.shared.EventHandler.addListener(java.util.function.Consumer):11:11 -> Initialize
-    20:20:void Initialize(android.content.Context,java.lang.String):34 -> Initialize
-    21:21:void Initialize(android.content.Context,java.lang.String):35:35 -> Initialize
+    20:20:void Initialize(android.content.Context,java.lang.String):35 -> Initialize
+    21:21:void Initialize(android.content.Context,java.lang.String):36:36 -> Initialize
     22:22:java.util.function.Consumer com.repocket.androidsdk.shared.EventHandler.addListener(java.util.function.Consumer):11:11 -> Initialize
-    22:22:void Initialize(android.content.Context,java.lang.String):35 -> Initialize
+    22:22:void Initialize(android.content.Context,java.lang.String):36 -> Initialize
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
     23:23:java.util.function.Consumer com.repocket.androidsdk.shared.EventHandler.addListener(java.util.function.Consumer):11:11 -> Initialize
-    23:23:void Initialize(android.content.Context,java.lang.String):35 -> Initialize
-    24:24:void Initialize(android.content.Context,java.lang.String):36:36 -> Initialize
-    25:25:java.util.function.Consumer com.repocket.androidsdk.shared.EventHandler.addListener(java.util.function.Consumer):11:11 -> Initialize
-    25:25:void Initialize(android.content.Context,java.lang.String):36 -> Initialize
-      # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    26:26:java.util.function.Consumer com.repocket.androidsdk.shared.EventHandler.addListener(java.util.function.Consumer):11:11 -> Initialize
-    26:26:void Initialize(android.content.Context,java.lang.String):36 -> Initialize
+    23:23:void Initialize(android.content.Context,java.lang.String):36 -> Initialize
     1:1:void StopPeer():46:46 -> StopPeer
     1:1:void lambda$Initialize$0(java.lang.Object):33:33 -> a
+    2:2:void lambda$CreatePeer$4():41:41 -> a
     1:1:void lambda$Initialize$1(java.lang.Object):34:34 -> b
     1:1:void lambda$Initialize$2(java.lang.Object):35:35 -> c
     1:1:void lambda$Initialize$3(java.lang.Object):36:36 -> d

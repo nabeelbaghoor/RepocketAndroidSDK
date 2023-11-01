@@ -26,9 +26,6 @@ public class RepocketSDK {
         _sdkApiKey = sdkApiKey;
         MyPlayerPrefs.SetString("sdk-api-key", sdkApiKey);
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
         _peerService = new PeerService(null,null,_sdkApiKey, null);
         _peerService.onConnected.addListener(x -> Log.d("RepocketSDK","RepocketSDK -> Initialize -> peer connected: " + x));
         _peerService.onConnecting.addListener(x -> Log.d("RepocketSDK","RepocketSDK -> Initialize -> peer resetting: " + x));
@@ -38,7 +35,7 @@ public class RepocketSDK {
 
     public static void CreatePeer()
     {
-        _peerService.createPeer();
+        new Thread(() -> _peerService.createPeer()).start();
     }
 
     public static void StopPeer()
