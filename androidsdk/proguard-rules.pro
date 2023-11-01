@@ -15,9 +15,9 @@
 # Preserve all public classes, and their public and protected fields and
 # methods.
 
--keep public class * {
-    public protected *;
-}
+#-keep public class * {
+#    public protected *;
+#}
 
 # Preserve all .class method names.
 
@@ -32,7 +32,7 @@
     native <methods>;
 }
 
--keepnames class com.repocket.androidsdk.RepocketSDK {public *;}
+-keep class com.repocket.androidsdk.RepocketSDK {public *;}
 -keep class com.repocket.androidsdk.types.Types {public *;}
 
 # Preserve the special static methods that are required in all enumeration
