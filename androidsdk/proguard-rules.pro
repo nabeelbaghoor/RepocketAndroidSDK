@@ -64,3 +64,9 @@
 # -keep public class mypackage.MyClass
 # -keep public interface mypackage.MyInterface
 # -keep public class * implements mypackage.MyInterface
+
+-keepattributes InnerClasses
+ -keep class com.repocket.androidsdk.types.Types**
+ -keepclassmembers class  com.repocket.androidsdk.types.Types** {
+    *;
+ }
