@@ -2,8 +2,8 @@
 # compiler_version: 8.1.65
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.2"}
-# pg_map_id: dfb27d7
-# pg_map_hash: SHA-256 dfb27d7a90412cae93c72e7e7823c8d91678b7340af853966046ce7557ed62e7
+# pg_map_id: 701faaf
+# pg_map_hash: SHA-256 701faaff51928e0449046f71bf4955d29dd440728bc248ce1509a6752408851f
 com.repocket.androidsdk.RepocketSDK -> com.repocket.androidsdk.RepocketSDK:
 # {"id":"sourceFile","fileName":"RepocketSDK.java"}
     java.lang.String _sdkApiKey -> a
@@ -378,13 +378,13 @@ com.repocket.androidsdk.shared.Utils -> c.k:
     1:17:java.lang.String getMacAddress():122:138 -> a
 com.repocket.androidsdk.types.Types -> com.repocket.androidsdk.types.Types:
 # {"id":"sourceFile","fileName":"Types.java"}
-    1:1:void <init>():3:3 -> <init>
+    1:1:void <init>():6:6 -> <init>
 com.repocket.androidsdk.types.Types$Config -> d.a:
 # {"id":"sourceFile","fileName":"Types.java"}
     java.lang.String ApiUrl -> a
     java.lang.String PeerApiUrl -> b
     java.lang.String MonitorApiUrl -> c
-    1:1:void <init>():48:48 -> <init>
+    1:1:void <init>():51:51 -> <init>
 com.repocket.androidsdk.types.Types$CreatePeerResponse -> d.b:
 # {"id":"sourceFile","fileName":"Types.java"}
 com.repocket.androidsdk.types.Types$DeviceInfo -> d.c:
@@ -396,7 +396,7 @@ com.repocket.androidsdk.types.Types$DeviceInfo -> d.c:
     java.lang.String version -> e
     java.lang.String connectivityType -> f
     java.lang.String os -> g
-    1:11:void <init>(int,java.lang.String,java.lang.String,boolean,java.lang.String,java.lang.String,boolean,int,java.lang.String,java.lang.String):34:44 -> <init>
+    1:11:void <init>(int,java.lang.String,java.lang.String,boolean,java.lang.String,java.lang.String,boolean,int,java.lang.String,java.lang.String):37:47 -> <init>
       # {"id":"com.android.tools.r8.residualsignature","signature":"(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V"}
 com.repocket.androidsdk.types.Types$IpInfo -> d.d:
 # {"id":"sourceFile","fileName":"Types.java"}
@@ -410,4 +410,4 @@ com.repocket.androidsdk.types.Types$RuntimeInfo -> d.f:
     boolean IsLinux -> d
     boolean IsAndroid -> e
     java.lang.String AppVersion -> f
-    1:1:void <init>():9:9 -> <init>
+    1:1:void <init>():12:12 -> <init>
