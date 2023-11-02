@@ -165,6 +165,8 @@ public class PeerService {
                     put("buildNumber", deviceInfo.buildNumber);
                     put("connectivityType", deviceInfo.connectivityType);
                     put("os", deviceInfo.os);
+                    put("is_sdk", true);
+                    put("sdk_version", "android_sdk_1.0");
                 }});
             }});
 
