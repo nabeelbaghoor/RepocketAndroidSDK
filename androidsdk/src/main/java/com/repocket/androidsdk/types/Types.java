@@ -1,5 +1,7 @@
 package com.repocket.androidsdk.types;
 
+import androidx.annotation.Keep;
+
 public abstract class Types {
     public String AppVersion;
     public boolean IsLinux;
