@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.repocket.androidsdk"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 28
