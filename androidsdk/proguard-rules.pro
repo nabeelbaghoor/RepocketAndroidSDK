@@ -3,6 +3,12 @@
 # tables to get line numbers in the stack traces.
 # You can comment this out if you're not interested in stack traces.
 
+# Added to resolve duplication issues
+-repackageclasses 'com.repocket.androidsdk'
+-allowaccessmodification
+-useuniqueclassmembernames
+-keeppackagenames doNotKeepAThing
+
 -printmapping out.map
 -keepparameternames
 -renamesourcefileattribute SourceFile

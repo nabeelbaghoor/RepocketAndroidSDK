@@ -2,9 +2,9 @@
 # compiler_version: 8.1.65
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.2"}
-# pg_map_id: 48b2033
-# pg_map_hash: SHA-256 48b2033d3f39fa029fde8ac37c8e5204dfa7d361c6a0f520f9ab7a08227f44e4
-com.repocket.androidsdk.P2P.MainSocket -> a.a:
+# pg_map_id: d279128
+# pg_map_hash: SHA-256 d2791280754cf7d7f8cd8f11c42daf2295ff6fb8046c247db2b4350f506a57a0
+com.repocket.androidsdk.P2P.MainSocket -> com.repocket.androidsdk.m:
 # {"id":"sourceFile","fileName":"MainSocket.java"}
     int _port -> a
     int _socketReqHandlerPort -> b
@@ -58,14 +58,14 @@ com.repocket.androidsdk.P2P.MainSocket -> a.a:
     1:16:void ReceiveData():88:103 -> d
     17:28:void ReceiveData():99:110 -> d
     1:1:void lambda$Connect$1():56:56 -> e
-com.repocket.androidsdk.P2P.RPSocket -> a.b:
+com.repocket.androidsdk.P2P.RPSocket -> com.repocket.androidsdk.d0:
 # {"id":"sourceFile","fileName":"RPSocket.java"}
     int RetryConnectionCounter -> a
     1:6:void <init>():16:21 -> <init>
-com.repocket.androidsdk.P2P.ReqHandlerSocket -> a.c:
+com.repocket.androidsdk.P2P.ReqHandlerSocket -> com.repocket.androidsdk.e0:
 # {"id":"sourceFile","fileName":"ReqHandlerSocket.java"}
     1:6:void <init>():16:21 -> <init>
-com.repocket.androidsdk.P2P.RequestHandlerSocket -> a.d:
+com.repocket.androidsdk.P2P.RequestHandlerSocket -> com.repocket.androidsdk.f0:
 # {"id":"sourceFile","fileName":"RequestHandlerSocket.java"}
     byte[] _buffer -> a
     java.lang.String _ip -> b
@@ -159,7 +159,7 @@ com.repocket.androidsdk.P2P.RequestHandlerSocket -> a.d:
     1:1:void lambda$Connect$0():53:53 -> d
 com.repocket.androidsdk.P2P.SocketHelper -> R8$$REMOVED$$CLASS$$0:
 # {"id":"sourceFile","fileName":"SocketHelper.java"}
-com.repocket.androidsdk.P2P.TargetSocket -> a.e:
+com.repocket.androidsdk.P2P.TargetSocket -> com.repocket.androidsdk.i0:
 # {"id":"sourceFile","fileName":"TargetSocket.java"}
     byte[] buffer -> a
     byte[] receivedBuffer -> b
@@ -168,7 +168,7 @@ com.repocket.androidsdk.P2P.TargetSocket -> a.e:
     java.net.Socket socket -> e
     com.repocket.androidsdk.shared.EventHandler targetWebsiteError -> f
     1:1:void <init>(java.net.Socket,java.util.Map,byte[]):26:26 -> <init>
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(La/c;Ljava/util/Map;[B)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/e0;Ljava/util/Map;[B)V"}
     2:8:void <init>(java.net.Socket,java.util.Map,byte[]):24:30 -> <init>
     1:16:void ReceiveData():113:128 -> a
     17:23:void com.repocket.androidsdk.P2P.TargetSocket.onError(java.lang.Exception):136:142 -> a
@@ -183,14 +183,14 @@ com.repocket.androidsdk.P2P.TargetSocket -> a.e:
     18:26:void connect():55:63 -> c
     1:4:void lambda$close$1():100:103 -> d
     1:1:void lambda$connect$0():44:44 -> e
-com.repocket.androidsdk.P2P.socks5.Socket5Handler -> b.a:
+com.repocket.androidsdk.P2P.socks5.Socket5Handler -> com.repocket.androidsdk.h0:
 # {"id":"sourceFile","fileName":"Socket5Handler.java"}
     java.net.Socket reqHandlerSocket -> a
     byte[] reqHandlerBuffer -> b
     byte[] proxyBuffer -> c
     java.net.Socket proxySocket -> d
     1:1:void <init>(java.net.Socket,int,java.lang.String,java.lang.String):26:26 -> <init>
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(La/c;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/e0;)V"}
     2:10:void <init>(java.net.Socket,int,java.lang.String,java.lang.String):24:32 -> <init>
     1:1:void createConnection(java.lang.String,int,int):122:122 -> a
     2:2:void com.repocket.androidsdk.P2P.socks5.Socket5Handler.reply(byte):162:162 -> a
@@ -245,7 +245,7 @@ com.repocket.androidsdk.RepocketSDK -> com.repocket.androidsdk.RepocketSDK:
     1:1:void lambda$Initialize$1(java.lang.Object):31:31 -> b
     1:1:void lambda$Initialize$2(java.lang.Object):32:32 -> c
     1:1:void lambda$Initialize$3(java.lang.Object):33:33 -> d
-com.repocket.androidsdk.classes.ConnectionMonitor -> c.b:
+com.repocket.androidsdk.classes.ConnectionMonitor -> com.repocket.androidsdk.d:
 # {"id":"sourceFile","fileName":"ConnectionMonitor.java"}
     boolean isRunning -> a
     java.util.Timer timer -> b
@@ -253,20 +253,20 @@ com.repocket.androidsdk.classes.ConnectionMonitor -> c.b:
     1:6:void <init>():11:16 -> <init>
     1:2:boolean com.repocket.androidsdk.classes.ConnectionMonitor.checkInternet():72:73 -> a
     1:2:boolean checkConnection():64 -> a
-com.repocket.androidsdk.classes.ConnectionMonitor$1 -> c.a:
+com.repocket.androidsdk.classes.ConnectionMonitor$1 -> com.repocket.androidsdk.c:
 # {"id":"sourceFile","fileName":"ConnectionMonitor.java"}
     java.lang.Runnable val$onConnectionDeactivate -> a
     java.lang.Runnable val$onConnectionActive -> b
     com.repocket.androidsdk.classes.ConnectionMonitor this$0 -> c
     1:1:void <init>(com.repocket.androidsdk.classes.ConnectionMonitor,java.lang.Runnable,java.lang.Runnable):29:29 -> <init>
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lc/b;Ljava/lang/Runnable;Ljava/lang/Runnable;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/d;Ljava/lang/Runnable;Ljava/lang/Runnable;)V"}
     1:1:void run():32:32 -> run
     2:2:void com.repocket.androidsdk.classes.ConnectionMonitor.access$000(com.repocket.androidsdk.classes.ConnectionMonitor,java.lang.Runnable,java.lang.Runnable):11:11 -> run
     2:2:void run():32 -> run
     3:14:void com.repocket.androidsdk.classes.ConnectionMonitor.monitorHandler(java.lang.Runnable,java.lang.Runnable):47:58 -> run
     3:14:void com.repocket.androidsdk.classes.ConnectionMonitor.access$000(com.repocket.androidsdk.classes.ConnectionMonitor,java.lang.Runnable,java.lang.Runnable):11 -> run
     3:14:void run():32 -> run
-com.repocket.androidsdk.classes.PeerMonitor -> c.d:
+com.repocket.androidsdk.classes.PeerMonitor -> com.repocket.androidsdk.t:
 # {"id":"sourceFile","fileName":"PeerMonitor.java"}
     java.lang.String configVersionToken -> a
     java.util.Timer interval -> b
@@ -275,7 +275,7 @@ com.repocket.androidsdk.classes.PeerMonitor -> c.d:
     1:1:void <init>():17:17 -> <init>
     1:59:void com.repocket.androidsdk.classes.PeerMonitor.monitorHandler(java.lang.Runnable,java.lang.Runnable,java.lang.Runnable):0:58 -> a
     1:59:void access$000(com.repocket.androidsdk.classes.PeerMonitor,java.lang.Runnable,java.lang.Runnable,java.lang.Runnable):17 -> a
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lc/d;Ljava/lang/Runnable;Ljava/lang/Runnable;Ljava/lang/Runnable;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/t;Ljava/lang/Runnable;Ljava/lang/Runnable;Ljava/lang/Runnable;)V"}
     60:60:void com.repocket.androidsdk.classes.PeerMonitor.monitorHandler(java.lang.Runnable,java.lang.Runnable,java.lang.Runnable):58:58 -> a
     60:60:void access$000(com.repocket.androidsdk.classes.PeerMonitor,java.lang.Runnable,java.lang.Runnable,java.lang.Runnable):17 -> a
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
@@ -304,16 +304,16 @@ com.repocket.androidsdk.classes.PeerMonitor -> c.d:
     115:115:java.lang.String com.repocket.androidsdk.shared.Utils.getToken():178:178 -> a
     115:115:void com.repocket.androidsdk.classes.PeerMonitor.monitorHandler(java.lang.Runnable,java.lang.Runnable,java.lang.Runnable):60 -> a
     115:115:void access$000(com.repocket.androidsdk.classes.PeerMonitor,java.lang.Runnable,java.lang.Runnable,java.lang.Runnable):17 -> a
-com.repocket.androidsdk.classes.PeerMonitor$1 -> c.c:
+com.repocket.androidsdk.classes.PeerMonitor$1 -> com.repocket.androidsdk.s:
 # {"id":"sourceFile","fileName":"PeerMonitor.java"}
     java.lang.Runnable val$peerDeactivate -> a
     java.lang.Runnable val$credentialsMissing -> b
     java.lang.Runnable val$peerActive -> c
     com.repocket.androidsdk.classes.PeerMonitor this$0 -> d
     1:1:void <init>(com.repocket.androidsdk.classes.PeerMonitor,java.lang.Runnable,java.lang.Runnable,java.lang.Runnable):39:39 -> <init>
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lc/d;Ljava/lang/Runnable;Ljava/lang/Runnable;Ljava/lang/Runnable;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/t;Ljava/lang/Runnable;Ljava/lang/Runnable;Ljava/lang/Runnable;)V"}
     1:1:void run():42:42 -> run
-com.repocket.androidsdk.classes.VPNWatcher -> c.f:
+com.repocket.androidsdk.classes.VPNWatcher -> com.repocket.androidsdk.l0:
 # {"id":"sourceFile","fileName":"VPNWatcher.java"}
     boolean isRunning -> a
     java.util.Timer timer -> b
@@ -322,17 +322,17 @@ com.repocket.androidsdk.classes.VPNWatcher -> c.f:
     3:10:java.util.concurrent.CompletableFuture com.repocket.androidsdk.classes.VPNWatcher.isVpnActive():69:76 -> a
     3:10:void vpnIntervalHandler(java.util.function.Supplier):57 -> a
     11:11:void vpnIntervalHandler(java.util.function.Supplier):58:58 -> a
-com.repocket.androidsdk.classes.VPNWatcher$1 -> c.e:
+com.repocket.androidsdk.classes.VPNWatcher$1 -> com.repocket.androidsdk.k0:
 # {"id":"sourceFile","fileName":"VPNWatcher.java"}
     java.lang.Runnable val$onVpnActivated -> a
     com.repocket.androidsdk.classes.VPNWatcher this$0 -> b
     1:1:void <init>(com.repocket.androidsdk.classes.VPNWatcher,java.lang.Runnable):32:32 -> <init>
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lc/f;Ljava/lang/Runnable;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/l0;Ljava/lang/Runnable;)V"}
     1:2:java.util.concurrent.CompletableFuture lambda$run$0(java.lang.Runnable):36:37 -> a
     1:1:void run():35:35 -> run
     2:2:void com.repocket.androidsdk.classes.VPNWatcher.access$000(com.repocket.androidsdk.classes.VPNWatcher,java.util.function.Supplier):13:13 -> run
     2:2:void run():35 -> run
-com.repocket.androidsdk.services.ApiService -> d.a:
+com.repocket.androidsdk.services.ApiService -> com.repocket.androidsdk.a:
 # {"id":"sourceFile","fileName":"ApiService.java"}
     java.lang.String _baseApi -> a
     com.repocket.androidsdk.services.HttpService _httpService -> b
@@ -346,13 +346,13 @@ com.repocket.androidsdk.services.ApiService -> d.a:
     6:9:okhttp3.Response com.repocket.androidsdk.services.HttpService.GetAsync(java.lang.String,java.util.Map):69 -> a
     6:9:okhttp3.Response Get(java.lang.String,java.util.Map):24 -> a
     10:10:okhttp3.Response Delete(java.lang.String,java.util.Map):36:36 -> a
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Ld/k;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/a0;)V"}
     11:15:okhttp3.Response com.repocket.androidsdk.services.HttpService.DeleteAsync(java.lang.String,java.lang.Object):91:95 -> a
     11:15:okhttp3.Response Delete(java.lang.String,java.util.Map):36 -> a
     16:19:okhttp3.Response com.repocket.androidsdk.services.HttpService.handleResponse(okhttp3.Request):131:134 -> a
     16:19:okhttp3.Response com.repocket.androidsdk.services.HttpService.DeleteAsync(java.lang.String,java.lang.Object):96 -> a
     16:19:okhttp3.Response Delete(java.lang.String,java.util.Map):36 -> a
-com.repocket.androidsdk.services.HttpService -> d.b:
+com.repocket.androidsdk.services.HttpService -> com.repocket.androidsdk.l:
 # {"id":"sourceFile","fileName":"HttpService.java"}
     okhttp3.OkHttpClient httpClient -> a
     java.lang.String accessToken -> b
@@ -365,7 +365,7 @@ com.repocket.androidsdk.services.HttpService -> d.b:
     4:28:okhttp3.Response lambda$new$0(okhttp3.Interceptor$Chain):41 -> a
     29:30:okhttp3.Response lambda$new$0(okhttp3.Interceptor$Chain):42:43 -> a
     31:31:boolean isEmpty(java.lang.String):187:187 -> a
-com.repocket.androidsdk.services.P2PService -> d.d:
+com.repocket.androidsdk.services.P2PService -> com.repocket.androidsdk.q:
 # {"id":"sourceFile","fileName":"P2PService.java"}
     java.lang.String ip -> a
     int port -> b
@@ -410,15 +410,15 @@ com.repocket.androidsdk.services.P2PService -> d.d:
     36:36:void lambda$startSocketConnection$0(java.lang.String):79:79 -> a
     37:37:void lambda$startSocketConnection$1(java.lang.Exception):80:80 -> a
     38:38:void lambda$startSocketConnection$2(java.lang.Object):81:81 -> a
-com.repocket.androidsdk.services.P2PService$1 -> d.c:
+com.repocket.androidsdk.services.P2PService$1 -> com.repocket.androidsdk.p:
 # {"id":"sourceFile","fileName":"P2PService.java"}
     com.repocket.androidsdk.services.P2PService this$0 -> a
     1:1:void <init>(com.repocket.androidsdk.services.P2PService):33:33 -> <init>
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Ld/d;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/q;)V"}
     1:1:void run():36:36 -> run
     2:2:int com.repocket.androidsdk.services.P2PService.access$002(com.repocket.androidsdk.services.P2PService,int):12:12 -> run
     2:2:void run():36 -> run
-com.repocket.androidsdk.services.PeerService -> d.m:
+com.repocket.androidsdk.services.PeerService -> com.repocket.androidsdk.c0:
 # {"id":"sourceFile","fileName":"PeerService.java"}
     com.repocket.androidsdk.classes.ConnectionMonitor connectionMonitor -> a
     com.repocket.androidsdk.shared.Debouncer deletePeerDebouncer -> b
@@ -447,11 +447,11 @@ com.repocket.androidsdk.services.PeerService -> d.m:
     2:72:void <init>(java.lang.String,java.lang.String,java.lang.String,java.lang.String):49:119 -> <init>
     73:74:void <init>(java.lang.String,java.lang.String,java.lang.String,java.lang.String):91:92 -> <init>
     1:1:java.lang.String access$200(com.repocket.androidsdk.services.PeerService):35:35 -> a
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Ld/m;)Ljava/lang/String;"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/c0;)Ljava/lang/String;"}
     2:2:void lambda$new$0(java.lang.Object):108:108 -> a
     3:3:void _handleConnectionClosed():265:265 -> a
     4:7:void lambda$registerEventListeners$16(com.repocket.androidsdk.shared.Debouncer,com.repocket.androidsdk.shared.Debouncer,com.repocket.androidsdk.shared.Debouncer,com.repocket.androidsdk.shared.Debouncer,com.repocket.androidsdk.shared.Debouncer,java.lang.Object):319:322 -> a
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Le/c;Le/c;Le/c;Le/c;Le/c;Ljava/lang/Object;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/f;Lcom/repocket/androidsdk/f;Lcom/repocket/androidsdk/f;Lcom/repocket/androidsdk/f;Lcom/repocket/androidsdk/f;Ljava/lang/Object;)V"}
     8:8:java.util.function.Consumer com.repocket.androidsdk.shared.EventHandler.addListener(java.util.function.Consumer):11:11 -> a
     8:8:void lambda$registerEventListeners$16(com.repocket.androidsdk.shared.Debouncer,com.repocket.androidsdk.shared.Debouncer,com.repocket.androidsdk.shared.Debouncer,com.repocket.androidsdk.shared.Debouncer,com.repocket.androidsdk.shared.Debouncer,java.lang.Object):322 -> a
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
@@ -482,9 +482,9 @@ com.repocket.androidsdk.services.PeerService -> d.m:
     21:21:java.util.function.Consumer com.repocket.androidsdk.shared.EventHandler.addListener(java.util.function.Consumer):11:11 -> a
     21:21:void lambda$registerEventListeners$16(com.repocket.androidsdk.shared.Debouncer,com.repocket.androidsdk.shared.Debouncer,com.repocket.androidsdk.shared.Debouncer,com.repocket.androidsdk.shared.Debouncer,com.repocket.androidsdk.shared.Debouncer,java.lang.Object):334 -> a
     22:23:void lambda$registerEventListeners$11(com.repocket.androidsdk.shared.Debouncer,java.lang.Object):323:324 -> a
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Le/c;Ljava/lang/Object;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/f;Ljava/lang/Object;)V"}
     24:24:void lambda$localPeerMonitorTimerElapsed$17(com.repocket.androidsdk.classes.ConnectionMonitor):420:420 -> a
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lc/b;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/d;)V"}
     25:25:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():39:39 -> a
     25:25:void lambda$localPeerMonitorTimerElapsed$17(com.repocket.androidsdk.classes.ConnectionMonitor):421 -> a
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
@@ -606,9 +606,9 @@ com.repocket.androidsdk.services.PeerService -> d.m:
     93:94:void stop(boolean):510:511 -> a
     1:1:void lambda$new$1(java.lang.Object):109:109 -> b
     2:2:void lambda$registerEventListeners$12(com.repocket.androidsdk.shared.Debouncer,java.lang.Object):328:328 -> b
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Le/c;Ljava/lang/Object;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/f;Ljava/lang/Object;)V"}
     3:3:void lambda$localPeerMonitorTimerElapsed$18(com.repocket.androidsdk.classes.ConnectionMonitor):423:423 -> b
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lc/b;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/d;)V"}
     4:4:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():39:39 -> b
     4:4:void lambda$localPeerMonitorTimerElapsed$18(com.repocket.androidsdk.classes.ConnectionMonitor):424 -> b
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
@@ -686,7 +686,7 @@ com.repocket.androidsdk.services.PeerService -> d.m:
     192:193:com.repocket.androidsdk.types.Types$IpInfo com.repocket.androidsdk.services.PeerService.getIpInfo():259:260 -> c
     192:193:void createPeer():136 -> c
     194:194:void lambda$registerEventListeners$13(com.repocket.androidsdk.shared.Debouncer,java.lang.Object):330:330 -> c
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Le/c;Ljava/lang/Object;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/f;Ljava/lang/Object;)V"}
     195:196:void com.repocket.androidsdk.services.PeerService.deletePeerDebounce():466:467 -> c
     195:196:void lambda$new$2(java.lang.Object):110 -> c
     1:1:void com.repocket.androidsdk.services.PeerService.onConnectionEstablishedDebounce():307:307 -> d
@@ -724,11 +724,11 @@ com.repocket.androidsdk.services.PeerService -> d.m:
     25:26:void com.repocket.androidsdk.services.PeerService.onConnectionEstablishedDebounce():308 -> d
     25:26:void lambda$registerEventListeners$10(java.lang.Object):316 -> d
     27:27:void lambda$registerEventListeners$14(com.repocket.androidsdk.shared.Debouncer,java.lang.Object):332:332 -> d
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Le/c;Ljava/lang/Object;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/f;Ljava/lang/Object;)V"}
     28:28:void credentialsMissing():377:377 -> d
     1:1:void lambda$registerEventListeners$6(java.lang.Object):0:0 -> e
     2:2:void lambda$registerEventListeners$15(com.repocket.androidsdk.shared.Debouncer,java.lang.Object):334:334 -> e
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Le/c;Ljava/lang/Object;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/f;Ljava/lang/Object;)V"}
     3:4:void handleConnectionClosedDebounce():452:453 -> e
     5:5:boolean com.repocket.androidsdk.services.PeerService._shouldReconnectThePeer():483:483 -> e
     5:5:void handleConnectionClosedDebounce():454 -> e
@@ -796,40 +796,40 @@ com.repocket.androidsdk.services.PeerService -> d.m:
     4:4:void startVpnWatcher():362:362 -> s
     5:20:void com.repocket.androidsdk.classes.VPNWatcher.start(java.lang.Runnable):28:43 -> s
     5:20:void startVpnWatcher():362 -> s
-com.repocket.androidsdk.services.PeerService$1 -> d.e:
+com.repocket.androidsdk.services.PeerService$1 -> com.repocket.androidsdk.u:
 # {"id":"sourceFile","fileName":"PeerService.java"}
     1:3:void <init>(com.repocket.androidsdk.services.PeerService):49:51 -> <init>
       # {"id":"com.android.tools.r8.residualsignature","signature":"()V"}
-com.repocket.androidsdk.services.PeerService$2 -> d.f:
+com.repocket.androidsdk.services.PeerService$2 -> com.repocket.androidsdk.v:
 # {"id":"sourceFile","fileName":"PeerService.java"}
     1:8:void <init>(com.repocket.androidsdk.services.PeerService):64:71 -> <init>
       # {"id":"com.android.tools.r8.residualsignature","signature":"()V"}
-com.repocket.androidsdk.services.PeerService$3 -> d.g:
+com.repocket.androidsdk.services.PeerService$3 -> com.repocket.androidsdk.w:
 # {"id":"sourceFile","fileName":"PeerService.java"}
     com.repocket.androidsdk.services.PeerService this$0 -> a
     1:1:void <init>(com.repocket.androidsdk.services.PeerService):112:112 -> <init>
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Ld/m;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/c0;)V"}
     1:1:void run():115:115 -> run
     2:2:void com.repocket.androidsdk.services.PeerService.access$000(com.repocket.androidsdk.services.PeerService):35:35 -> run
     2:2:void run():115 -> run
-com.repocket.androidsdk.services.PeerService$4 -> d.i:
+com.repocket.androidsdk.services.PeerService$4 -> com.repocket.androidsdk.y:
 # {"id":"sourceFile","fileName":"PeerService.java"}
     com.repocket.androidsdk.types.Types$DeviceInfo val$deviceInfo -> a
     1:6:void <init>(com.repocket.androidsdk.services.PeerService,com.repocket.androidsdk.types.Types$IpInfo,java.lang.String,com.repocket.androidsdk.types.Types$DeviceInfo):152:157 -> <init>
       # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/types/Types$IpInfo;Ljava/lang/String;Lcom/repocket/androidsdk/types/Types$DeviceInfo;)V"}
-com.repocket.androidsdk.services.PeerService$4$1 -> d.h:
+com.repocket.androidsdk.services.PeerService$4$1 -> com.repocket.androidsdk.x:
 # {"id":"sourceFile","fileName":"PeerService.java"}
     1:13:void <init>(com.repocket.androidsdk.services.PeerService$4):157:169 -> <init>
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Ld/i;)V"}
-com.repocket.androidsdk.services.PeerService$5 -> d.j:
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/y;)V"}
+com.repocket.androidsdk.services.PeerService$5 -> com.repocket.androidsdk.z:
 # {"id":"sourceFile","fileName":"PeerService.java"}
     1:2:void <init>(com.repocket.androidsdk.services.PeerService):341:342 -> <init>
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Ld/m;)V"}
-com.repocket.androidsdk.services.PeerService$6 -> d.k:
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/c0;)V"}
+com.repocket.androidsdk.services.PeerService$6 -> com.repocket.androidsdk.a0:
 # {"id":"sourceFile","fileName":"PeerService.java"}
     1:2:void <init>(com.repocket.androidsdk.services.PeerService):501:502 -> <init>
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Ld/m;)V"}
-com.repocket.androidsdk.services.PeerService$RemoteSettings -> d.l:
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/c0;)V"}
+com.repocket.androidsdk.services.PeerService$RemoteSettings -> com.repocket.androidsdk.b0:
 # {"id":"sourceFile","fileName":"PeerService.java"}
     int peerMonitorRate -> a
     1:1:void <init>(com.repocket.androidsdk.services.PeerService):515:515 -> <init>
@@ -838,7 +838,7 @@ com.repocket.androidsdk.services.PeerService$RemoteSettings -> d.l:
       # {"id":"com.android.tools.r8.residualsignature","signature":"(I)V"}
     1:1:void setPeerMonitorRate(int):523:523 -> a
       # {"id":"com.android.tools.r8.residualsignature","signature":"()V"}
-com.repocket.androidsdk.services.Services -> d.n:
+com.repocket.androidsdk.services.Services -> com.repocket.androidsdk.g0:
 # {"id":"sourceFile","fileName":"Services.java"}
     com.repocket.androidsdk.services.ApiService MonitorApiService -> a
     com.repocket.androidsdk.services.ApiService PeerManagerApiService -> b
@@ -852,28 +852,28 @@ com.repocket.androidsdk.services.Services -> d.n:
     8:9:java.util.Map com.repocket.androidsdk.services.Services.getConfigMap(java.lang.String):13:14 -> <clinit>
     8:9:void <clinit>():10 -> <clinit>
     10:10:void <clinit>() -> <clinit>
-com.repocket.androidsdk.shared.Callback -> e.a:
+com.repocket.androidsdk.shared.Callback -> com.repocket.androidsdk.b:
 # {"id":"sourceFile","fileName":"Callback.java"}
     void call(java.lang.Object) -> a
-com.repocket.androidsdk.shared.Debouncer -> e.c:
+com.repocket.androidsdk.shared.Debouncer -> com.repocket.androidsdk.f:
 # {"id":"sourceFile","fileName":"Debouncer.java"}
     java.util.concurrent.ScheduledExecutorService sched -> a
     java.util.concurrent.ConcurrentHashMap delayedMap -> b
     com.repocket.androidsdk.shared.Callback callback -> c
     int interval -> d
     1:1:void <init>(com.repocket.androidsdk.shared.Callback,int):14:14 -> <init>
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Le/a;I)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/b;I)V"}
     2:9:void <init>(com.repocket.androidsdk.shared.Callback,int):9:16 -> <init>
     1:8:void call(java.lang.Object):20:27 -> a
       # {"id":"com.android.tools.r8.residualsignature","signature":"(Ljava/lang/String;)V"}
-com.repocket.androidsdk.shared.Debouncer$TimerTask -> e.b:
+com.repocket.androidsdk.shared.Debouncer$TimerTask -> com.repocket.androidsdk.e:
 # {"id":"sourceFile","fileName":"Debouncer.java"}
     java.lang.Object key -> a
     long dueTime -> b
     java.lang.Object lock -> c
     com.repocket.androidsdk.shared.Debouncer this$0 -> d
     1:1:void <init>(com.repocket.androidsdk.shared.Debouncer,java.lang.Object):40:40 -> <init>
-      # {"id":"com.android.tools.r8.residualsignature","signature":"(Le/c;Ljava/lang/String;)V"}
+      # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/f;Ljava/lang/String;)V"}
     2:6:void <init>(com.repocket.androidsdk.shared.Debouncer,java.lang.Object):38:42 -> <init>
     1:4:boolean extend():46:49 -> a
     5:5:int com.repocket.androidsdk.shared.Debouncer.access$000(com.repocket.androidsdk.shared.Debouncer):8:8 -> a
@@ -893,14 +893,14 @@ com.repocket.androidsdk.shared.Debouncer$TimerTask -> e.b:
     21:21:java.util.concurrent.ConcurrentHashMap com.repocket.androidsdk.shared.Debouncer.access$300(com.repocket.androidsdk.shared.Debouncer):8:8 -> run
     21:21:void run():64 -> run
     22:25:void run():64:67 -> run
-com.repocket.androidsdk.shared.EventHandler -> e.d:
+com.repocket.androidsdk.shared.EventHandler -> com.repocket.androidsdk.g:
 # {"id":"sourceFile","fileName":"EventHandler.java"}
     java.util.Set listeners -> a
     1:2:void <init>():7:8 -> <init>
     1:1:void broadcast(java.lang.Object):16:16 -> a
       # {"id":"com.android.tools.r8.residualsignature","signature":"(Ljava/io/Serializable;)V"}
     2:2:void lambda$broadcast$0(java.lang.Object,java.util.function.Consumer):16:16 -> a
-com.repocket.androidsdk.shared.Global -> e.h:
+com.repocket.androidsdk.shared.Global -> com.repocket.androidsdk.k:
 # {"id":"sourceFile","fileName":"Global.java"}
     com.repocket.androidsdk.types.Types$RuntimeInfo _runtimeInfo -> a
     com.repocket.androidsdk.types.Types$Config Prod -> b
@@ -923,22 +923,22 @@ com.repocket.androidsdk.shared.Global -> e.h:
     16:16:boolean com.repocket.androidsdk.shared.Global.isAndroid():86:86 -> b
     16:16:com.repocket.androidsdk.types.Types$RuntimeInfo GetRuntimeInfo():49 -> b
     17:21:com.repocket.androidsdk.types.Types$RuntimeInfo GetRuntimeInfo():49:53 -> b
-com.repocket.androidsdk.shared.Global$1 -> e.e:
+com.repocket.androidsdk.shared.Global$1 -> com.repocket.androidsdk.h:
 # {"id":"sourceFile","fileName":"Global.java"}
     1:9:void <init>():8:16 -> <init>
-com.repocket.androidsdk.shared.Global$2 -> e.f:
+com.repocket.androidsdk.shared.Global$2 -> com.repocket.androidsdk.i:
 # {"id":"sourceFile","fileName":"Global.java"}
     1:9:void <init>():19:27 -> <init>
-com.repocket.androidsdk.shared.Global$3 -> e.g:
+com.repocket.androidsdk.shared.Global$3 -> com.repocket.androidsdk.j:
 # {"id":"sourceFile","fileName":"Global.java"}
     1:9:void <init>():30:38 -> <init>
-com.repocket.androidsdk.shared.MyPlayerPrefs -> e.i:
+com.repocket.androidsdk.shared.MyPlayerPrefs -> com.repocket.androidsdk.n:
 # {"id":"sourceFile","fileName":"MyPlayerPrefs.java"}
     java.util.concurrent.ConcurrentMap Preferences -> a
     1:1:void <clinit>():7:7 -> <clinit>
     1:1:void SetString(java.lang.String,java.lang.String):19:19 -> a
     2:3:java.lang.String GetString(java.lang.String):23:24 -> a
-com.repocket.androidsdk.shared.NetworkCheck -> e.j:
+com.repocket.androidsdk.shared.NetworkCheck -> com.repocket.androidsdk.o:
 # {"id":"sourceFile","fileName":"NetworkCheck.java"}
     android.content.Context context -> a
     android.net.ConnectivityManager connectivityManager -> b
@@ -946,7 +946,7 @@ com.repocket.androidsdk.shared.NetworkCheck -> e.j:
     1:1:void <init>():23:23 -> <init>
     1:7:boolean CheckMobile():51:57 -> a
     1:7:boolean CheckWifi():39:45 -> b
-com.repocket.androidsdk.shared.Utils -> e.k:
+com.repocket.androidsdk.shared.Utils -> com.repocket.androidsdk.j0:
 # {"id":"sourceFile","fileName":"Utils.java"}
     com.google.gson.Gson gson -> a
     1:1:void <clinit>():27:27 -> <clinit>
