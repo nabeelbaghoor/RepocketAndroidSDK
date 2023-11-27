@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.repocket.repocketandroidsdk"
-        minSdk = 28
+        minSdk = 21
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
