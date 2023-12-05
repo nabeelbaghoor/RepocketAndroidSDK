@@ -2,8 +2,8 @@
 # compiler_version: 8.1.65
 # common_typos_disable
 # {"id":"com.android.tools.r8.mapping","version":"2.2"}
-# pg_map_id: d279128
-# pg_map_hash: SHA-256 d2791280754cf7d7f8cd8f11c42daf2295ff6fb8046c247db2b4350f506a57a0
+# pg_map_id: 01c90f3
+# pg_map_hash: SHA-256 01c90f38440748fb4b85ffdfc7e885f95e17cbf6002f775f4e781a651a167a49
 com.repocket.androidsdk.P2P.MainSocket -> com.repocket.androidsdk.m:
 # {"id":"sourceFile","fileName":"MainSocket.java"}
     int _port -> a
@@ -250,22 +250,22 @@ com.repocket.androidsdk.classes.ConnectionMonitor -> com.repocket.androidsdk.d:
     boolean isRunning -> a
     java.util.Timer timer -> b
     int duration -> c
-    1:6:void <init>():11:16 -> <init>
-    1:2:boolean com.repocket.androidsdk.classes.ConnectionMonitor.checkInternet():72:73 -> a
-    1:2:boolean checkConnection():64 -> a
+    1:7:void <init>():11:17 -> <init>
+    1:2:boolean com.repocket.androidsdk.classes.ConnectionMonitor.checkInternet():73:74 -> a
+    1:2:boolean checkConnection():65 -> a
 com.repocket.androidsdk.classes.ConnectionMonitor$1 -> com.repocket.androidsdk.c:
 # {"id":"sourceFile","fileName":"ConnectionMonitor.java"}
     java.lang.Runnable val$onConnectionDeactivate -> a
     java.lang.Runnable val$onConnectionActive -> b
     com.repocket.androidsdk.classes.ConnectionMonitor this$0 -> c
-    1:1:void <init>(com.repocket.androidsdk.classes.ConnectionMonitor,java.lang.Runnable,java.lang.Runnable):29:29 -> <init>
+    1:1:void <init>(com.repocket.androidsdk.classes.ConnectionMonitor,java.lang.Runnable,java.lang.Runnable):30:30 -> <init>
       # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/d;Ljava/lang/Runnable;Ljava/lang/Runnable;)V"}
-    1:1:void run():32:32 -> run
+    1:1:void run():33:33 -> run
     2:2:void com.repocket.androidsdk.classes.ConnectionMonitor.access$000(com.repocket.androidsdk.classes.ConnectionMonitor,java.lang.Runnable,java.lang.Runnable):11:11 -> run
-    2:2:void run():32 -> run
-    3:14:void com.repocket.androidsdk.classes.ConnectionMonitor.monitorHandler(java.lang.Runnable,java.lang.Runnable):47:58 -> run
+    2:2:void run():33 -> run
+    3:14:void com.repocket.androidsdk.classes.ConnectionMonitor.monitorHandler(java.lang.Runnable,java.lang.Runnable):48:59 -> run
     3:14:void com.repocket.androidsdk.classes.ConnectionMonitor.access$000(com.repocket.androidsdk.classes.ConnectionMonitor,java.lang.Runnable,java.lang.Runnable):11 -> run
-    3:14:void run():32 -> run
+    3:14:void run():33 -> run
 com.repocket.androidsdk.classes.PeerMonitor -> com.repocket.androidsdk.t:
 # {"id":"sourceFile","fileName":"PeerMonitor.java"}
     java.lang.String configVersionToken -> a
@@ -485,10 +485,10 @@ com.repocket.androidsdk.services.PeerService -> com.repocket.androidsdk.c0:
       # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/f;Ljava/lang/Object;)V"}
     24:24:void lambda$localPeerMonitorTimerElapsed$17(com.repocket.androidsdk.classes.ConnectionMonitor):420:420 -> a
       # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/d;)V"}
-    25:25:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():39:39 -> a
+    25:25:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():40:40 -> a
     25:25:void lambda$localPeerMonitorTimerElapsed$17(com.repocket.androidsdk.classes.ConnectionMonitor):421 -> a
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    26:28:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():40:42 -> a
+    26:28:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():41:43 -> a
     26:28:void lambda$localPeerMonitorTimerElapsed$17(com.repocket.androidsdk.classes.ConnectionMonitor):421 -> a
     29:31:void stop(boolean):492:494 -> a
     32:32:void com.repocket.androidsdk.classes.PeerMonitor.stop():49:49 -> a
@@ -497,10 +497,10 @@ com.repocket.androidsdk.services.PeerService -> com.repocket.androidsdk.c0:
     34:36:void com.repocket.androidsdk.classes.PeerMonitor.stop():51:53 -> a
     34:36:void stop(boolean):494 -> a
     37:37:void stop(boolean):496:496 -> a
-    38:38:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():39:39 -> a
+    38:38:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():40:40 -> a
     38:38:void stop(boolean):496 -> a
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    39:41:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():40:42 -> a
+    39:41:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():41:43 -> a
     39:41:void stop(boolean):496 -> a
     42:42:void stop(boolean):498:498 -> a
     43:47:void com.repocket.androidsdk.classes.VPNWatcher.stop():48:52 -> a
@@ -609,10 +609,10 @@ com.repocket.androidsdk.services.PeerService -> com.repocket.androidsdk.c0:
       # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/f;Ljava/lang/Object;)V"}
     3:3:void lambda$localPeerMonitorTimerElapsed$18(com.repocket.androidsdk.classes.ConnectionMonitor):423:423 -> b
       # {"id":"com.android.tools.r8.residualsignature","signature":"(Lcom/repocket/androidsdk/d;)V"}
-    4:4:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():39:39 -> b
+    4:4:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():40:40 -> b
     4:4:void lambda$localPeerMonitorTimerElapsed$18(com.repocket.androidsdk.classes.ConnectionMonitor):424 -> b
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    5:7:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():40:42 -> b
+    5:7:void com.repocket.androidsdk.classes.ConnectionMonitor.stop():41:43 -> b
     5:7:void lambda$localPeerMonitorTimerElapsed$18(com.repocket.androidsdk.classes.ConnectionMonitor):424 -> b
     8:13:void com.repocket.androidsdk.services.PeerService._resetPeer():443:448 -> b
     8:13:void lambda$localPeerMonitorTimerElapsed$18(com.repocket.androidsdk.classes.ConnectionMonitor):426 -> b
@@ -749,10 +749,10 @@ com.repocket.androidsdk.services.PeerService -> com.repocket.androidsdk.c0:
     2:3:int com.repocket.androidsdk.shared.MyPlayerPrefs.GetInt(java.lang.String):10:11 -> j
     2:3:void localPeerMonitorTimerElapsed():411 -> j
     4:8:void localPeerMonitorTimerElapsed():413:417 -> j
-    9:9:void com.repocket.androidsdk.classes.ConnectionMonitor.setDuration(int):18:18 -> j
+    9:9:void com.repocket.androidsdk.classes.ConnectionMonitor.setDuration(int):19:19 -> j
     9:9:void localPeerMonitorTimerElapsed():418 -> j
     10:10:void localPeerMonitorTimerElapsed():419:419 -> j
-    11:14:void com.repocket.androidsdk.classes.ConnectionMonitor.start(java.lang.Runnable,java.lang.Runnable):26:29 -> j
+    11:14:void com.repocket.androidsdk.classes.ConnectionMonitor.start(java.lang.Runnable,java.lang.Runnable):27:30 -> j
     11:14:void localPeerMonitorTimerElapsed():419 -> j
     1:2:void onConnectionActive():386:387 -> k
     3:8:void com.repocket.androidsdk.services.PeerService._resetPeer():443:448 -> k
@@ -769,13 +769,13 @@ com.repocket.androidsdk.services.PeerService -> com.repocket.androidsdk.c0:
     9:9:void registerEventListeners():318 -> o
     1:6:void resetPeerDebounce():269:274 -> p
     1:1:void startConnectionMonitor():381:381 -> q
-    2:2:void com.repocket.androidsdk.classes.ConnectionMonitor.init():22:22 -> q
+    2:2:void com.repocket.androidsdk.classes.ConnectionMonitor.init():23:23 -> q
     2:2:void startConnectionMonitor():381 -> q
     3:3:void startConnectionMonitor():382:382 -> q
-    4:4:void com.repocket.androidsdk.classes.ConnectionMonitor.start(java.lang.Runnable,java.lang.Runnable):26:26 -> q
+    4:4:void com.repocket.androidsdk.classes.ConnectionMonitor.start(java.lang.Runnable,java.lang.Runnable):27:27 -> q
     4:4:void startConnectionMonitor():382 -> q
       # {"id":"com.android.tools.r8.rewriteFrame","conditions":["throws(Ljava/lang/NullPointerException;)"],"actions":["removeInnerFrames(1)"]}
-    5:7:void com.repocket.androidsdk.classes.ConnectionMonitor.start(java.lang.Runnable,java.lang.Runnable):27:29 -> q
+    5:7:void com.repocket.androidsdk.classes.ConnectionMonitor.start(java.lang.Runnable,java.lang.Runnable):28:30 -> q
     5:7:void startConnectionMonitor():382 -> q
     1:3:void startPeerMonitor():370:372 -> r
     4:7:void com.repocket.androidsdk.classes.PeerMonitor.init(java.lang.String,java.lang.String,java.lang.String):28:31 -> r

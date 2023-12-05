@@ -10,6 +10,7 @@ import java.util.TimerTask;
 
 public class ConnectionMonitor {
 
+    private int second = 7;
     private boolean isConnectionActive = false;
     private boolean isRunning;
     private Timer timer;
