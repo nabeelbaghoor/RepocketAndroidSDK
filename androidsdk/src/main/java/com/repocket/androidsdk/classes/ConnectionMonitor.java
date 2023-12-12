@@ -24,7 +24,7 @@ public class ConnectionMonitor {
     }
 
     public void start(final Runnable onConnectionDeactivate, final Runnable onConnectionActive) {
-        if (!isRunning) {
+        if (timer == null) {
             isRunning = true;
             timer = new Timer();
             timer.scheduleAtFixedRate(new TimerTask() {
@@ -37,9 +37,10 @@ public class ConnectionMonitor {
     }
 
     public void stop() {
-        if (isRunning) {
+        if (timer == null) {
             isRunning = false;
             timer.cancel();
+            timer = null;
             Log.d("RepocketSDK", "ConnectionMonitor -> stop: Monitor Stopped.");
         }
     }
