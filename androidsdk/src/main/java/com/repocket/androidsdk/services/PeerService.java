@@ -89,7 +89,6 @@ public class PeerService {
 
         if (firebaseLoginToken == null && peerApiToken == null && sdkApiKey == null) {
             Log.d("RepocketSDK", "PeerService -> firebaseLoginToken or peerApiToken or sdkApiKey is required");
-            throw new RuntimeException("firebaseLoginToken or peerApiToken or sdkApiKey is required");
         }
 
         if (firebaseLoginToken != null) {
@@ -256,6 +255,8 @@ public class PeerService {
         } catch (IOException e) {
             Log.d("RepocketSDK", "PeerService -> getIpInfo -> IOException: " + e);
         }
+
+        return null;
     }
 
     private void _handleConnectionClosed() {

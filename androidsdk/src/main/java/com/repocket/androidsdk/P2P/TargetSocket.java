@@ -55,7 +55,6 @@ public class TargetSocket {
                     socket.getOutputStream().write(receivedBuffer);
                 } catch (Exception e) {
                     Log.d("RepocketSDK", "TargetSocket -> connect -> targetSocket.write error: " + e);
-                    throw new RuntimeException(e);
                 }
             }
         } catch (Exception e) {
