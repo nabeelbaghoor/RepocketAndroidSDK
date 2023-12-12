@@ -50,7 +50,7 @@ public class TestPeerService {
                 throw createException(responseMessage);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            Log.d("RepocketSDK", "TestPeerService -> nodeLogIn: " + e.getMessage());
         }
     }
 

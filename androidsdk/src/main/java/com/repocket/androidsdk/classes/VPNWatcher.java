@@ -70,7 +70,7 @@ public class VPNWatcher {
 
             // RPLogger.log("interfaces: ", interfaces);
         } catch (SocketException e) {
-            e.printStackTrace();
+            Log.e("RepocketSDK", "VPNWatcher -> isVpnActive:" + e.getMessage());
         }
 
         return CompletableFuture.completedFuture(isVpnActive);

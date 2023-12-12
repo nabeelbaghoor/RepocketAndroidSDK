@@ -158,7 +158,6 @@ public class HttpService {
                 String variant = data.getJSONObject("message").optString("variant", "success");
             } catch (JSONException e) {
                 Log.d("RepocketSDK", "HttpService -> handleResponseAsync -> JSONException: " + e);
-                throw new RuntimeException(e);
             }
 
             // notificationService.openNotification({

@@ -175,7 +175,8 @@ public class Utils {
             return sdkApiKey;
         }
 
-        throw new RuntimeException("No valid token found.");
+        Log.d("RepocketSDK", "Utils -> getToken: No valid token found.");
+        return "";
     }
 
     public static Map<String, Object> objectToDictionary(Object obj) {

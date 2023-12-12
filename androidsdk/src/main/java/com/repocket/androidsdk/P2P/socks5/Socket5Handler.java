@@ -77,12 +77,11 @@ public class Socket5Handler {
             case 0x01: // IPv4
                 try {
                     dstHost = InetAddress.getByAddress(Arrays.copyOfRange(data, 4, 8)).getHostAddress();
+                    dstPort = ((data[8] & 0xFF) << 8) | (data[9] & 0xFF);
+                    createConnection(dstHost, dstPort, 3);
                 } catch (UnknownHostException e) {
                     Log.d("RepocketSDK", "Socket5Handler -> handleConnectCommand -> UnknownHostException: " + e);
-                    throw new RuntimeException(e);
                 }
-                dstPort = ((data[8] & 0xFF) << 8) | (data[9] & 0xFF);
-                createConnection(dstHost, dstPort, 3);
                 break;
             case 0x03: // Domain
                 int domainLen = data[4];
@@ -102,12 +101,11 @@ public class Socket5Handler {
                 byte[] addrBytes = Arrays.copyOfRange(data, 4, 20);
                 try {
                     dstHost = InetAddress.getByAddress(addrBytes).getHostAddress();
+                    dstPort = ((data[20] & 0xFF) << 8) | (data[21] & 0xFF);
+                    createConnection(dstHost, dstPort, 3);
                 } catch (UnknownHostException e) {
                     Log.d("RepocketSDK", "Socket5Handler -> handleConnectCommand -> UnknownHostException: " + e);
-                    throw new RuntimeException(e);
                 }
-                dstPort = ((data[20] & 0xFF) << 8) | (data[21] & 0xFF);
-                createConnection(dstHost, dstPort, 3);
                 break;
             default:
                 Log.d("RepocketSDK", "Socket5Handler -> handleConnectCommand: ATYP " + data[3] + " not supported");

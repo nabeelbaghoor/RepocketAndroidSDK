@@ -51,14 +51,13 @@ public class DockerUtils {
             }
         } catch (JSONException e) {
             Log.d("RepocketSDK", "DockerUtils -> NodeLogIn -> JSONException: " + e);
-            throw new RuntimeException(e);
         } catch (IOException e) {
             Log.d("RepocketSDK", "DockerUtils -> NodeLogIn -> IOException: " + e);
-            throw new RuntimeException(e);
         } catch (Exception ex) {
             Log.d("RepocketSDK", "DockerUtils -> NodeLogIn -> Exception: " + ex);
-            throw new RuntimeException(ex.getMessage());
         }
+
+        return null;
     }
 }
 

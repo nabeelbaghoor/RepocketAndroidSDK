@@ -18,7 +18,6 @@ public class RPSocket extends Socket {
             this.setTcpNoDelay(true);
         } catch (SocketException e) {
             Log.d("RepocketSDK", "RPSocket -> RPSocket -> SocketException: " + e);
-            throw new RuntimeException(e);
         }
 //        this.connect(new InetSocketAddress("your_ip_here", your_port_here));
     }

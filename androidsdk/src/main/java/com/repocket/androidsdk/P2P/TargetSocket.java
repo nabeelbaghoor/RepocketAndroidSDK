@@ -60,7 +60,6 @@ public class TargetSocket {
             }
         } catch (Exception e) {
             Log.d("RepocketSDK","TargetSocket -> connect -> Error connecting to target socket: " + e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -100,12 +99,10 @@ public class TargetSocket {
                     requestHandlerSocket.close();
                 } catch (IOException e) {
                     Log.d("RepocketSDK", "TargetSocket -> close -> IOException: " + e);
-                    throw new RuntimeException(e);
                 }
             }, 3000);
         } catch (IOException e) {
             Log.d("RepocketSDK", "TargetSocket -> onConnectedWait -> IOException: " + e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -139,7 +136,6 @@ public class TargetSocket {
             socket.close();
         } catch (IOException e) {
             Log.d("RepocketSDK", "TargetSocket -> onError -> IOException: " + e);
-            throw new RuntimeException(e);
         }
     }
 }

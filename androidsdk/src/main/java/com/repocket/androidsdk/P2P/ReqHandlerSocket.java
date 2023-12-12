@@ -18,7 +18,6 @@ public class ReqHandlerSocket extends Socket {
             this.setTcpNoDelay(true);
         } catch (SocketException e) {
             Log.d("RepocketSDK", "ReqHandlerSocket -> ReqHandlerSocket -> SocketException: " + e);
-            throw new RuntimeException(e);
         }
         // Additional socket initialization if needed
     }

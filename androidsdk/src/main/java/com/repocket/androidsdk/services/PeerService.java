@@ -176,7 +176,6 @@ public class PeerService {
                     json = response.body().string();
                 } catch (IOException e) {
                     Log.d("RepocketSDK", "PeerService -> createPeer -> IOException: " + e);
-                    throw new RuntimeException(e);
                 }
                 Types.CreatePeerResponse createPeer = Utils.fromJson(json, Types.CreatePeerResponse.class);
 
@@ -228,7 +227,6 @@ public class PeerService {
             responseData = response.body().string();
         } catch (IOException e) {
             Log.d("RepocketSDK", "PeerService -> getPeerConfig -> IOException: " + e);
-            throw new RuntimeException(e);
         }
 
         if (response.isSuccessful()) {
@@ -257,7 +255,6 @@ public class PeerService {
             }
         } catch (IOException e) {
             Log.d("RepocketSDK", "PeerService -> getIpInfo -> IOException: " + e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -427,7 +424,6 @@ public class PeerService {
                         Log.d("RepocketSDK", "PeerService -> localPeerMonitorTimerElapsed: Reset peer after an unhandled disconnect");
                     } catch (Exception exception) {
                         Log.d("RepocketSDK", "PeerService -> localPeerMonitorTimerElapsed -> Error resetting peer: " + exception.getMessage());
-                        throw new RuntimeException(exception);
                     }
                 });
             }

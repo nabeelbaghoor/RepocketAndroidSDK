@@ -20,7 +20,6 @@ public class SocketHelper {
             socket.getOutputStream().flush(); // Flush the output stream to ensure the data is sent immediately
         } catch (IOException e) {
             Log.d("RepocketSDK", "SocketHelper -> writeToSocket -> IOException: " + e);
-            throw new RuntimeException(e);
         }
     }
 

@@ -89,7 +89,6 @@ public class PeerMonitor {
             }
         } catch (IOException error) {
             Log.e("RepocketSDK", "PeerMonitor -> monitorHandler -> Peer monitor error: " + error.getMessage());
-            throw new RuntimeException(error);
         }
     }
 }

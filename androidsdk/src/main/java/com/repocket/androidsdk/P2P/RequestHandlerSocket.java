@@ -113,7 +113,6 @@ public class RequestHandlerSocket {
                 _socket.getOutputStream().write(responseBytes);
             } catch (IOException e) {
                 Log.d("RepocketSDK", "RequestHandlerSocket -> authPacket block -> IOException: " + e);
-                throw new RuntimeException(e);
             }
             return;
         }
@@ -124,7 +123,6 @@ public class RequestHandlerSocket {
                     _targetSocket.socket.close();
                 } catch (IOException e) {
                     Log.d("RepocketSDK", "RequestHandlerSocket -> remoteSocketClosePacket block -> IOException: " + e);
-                    throw new RuntimeException(e);
                 }
             }
         } else if (_targetSocket != null) {
