@@ -31,7 +31,15 @@ public class MainSocket {
     public EventHandler<String> ConnectionEstablished = new EventHandler<>();
     public EventHandler SocketConnectionClose = new EventHandler<>();
 
-    public MainSocket(int port, String ip, String peerId, String token, String userId, int socketReqHandlerPort) {
+    public void RemoveAllListeners() // ??
+    {
+        SocketConnectionFailed = null;
+        ConnectionEstablished = null;
+        SocketConnectionClose = null;
+    }
+
+    public MainSocket(int port, String ip, String peerId, String token, String userId, int socketReqHandlerPort) // socketReqHandlerPort = 7072
+    {
         _ip = ip;
         _port = port;
         _socketReqHandlerPort = socketReqHandlerPort;
@@ -60,6 +68,7 @@ public class MainSocket {
             Log.d("RepocketSDK", "MainSocket -> Connect: Main socket connect error:" + ex.getMessage());
             _peerCloseWithError = true;
             SocketConnectionFailed.broadcast(ex);
+            OnClose();
             return false;
         }
     }
@@ -97,6 +106,7 @@ public class MainSocket {
                     HandleRead(receivedBytes);
                 } catch (Exception e) {
                     Log.d("RepocketSDK","MainSocket -> ReceiveCallback -> e:"+ e);
+                    OnError(e);
                 }
 
                 ReceiveData();
@@ -104,9 +114,17 @@ public class MainSocket {
                 Log.d("RepocketSDK:","MainSocket -> ReceiveCallback -> close");
                 OnClose();
             }
-        } catch (IOException ex) {
+        }
+        catch (SocketException ex)
+        {
+            if (ex.getMessage().toLowerCase().contains("connection reset")) {
+                OnClose();
+            }
+        }
+        catch (IOException ex) {
             Log.d("RepocketSDK","MainSocket -> ReceiveCallback: Main socket receive error: "+ex.getMessage());
-            SocketConnectionFailed.broadcast(ex);
+//            SocketConnectionFailed.broadcast(ex);
+            OnError(ex);
         }
     }
 
@@ -127,6 +145,14 @@ public class MainSocket {
         }
     }
 
+    private void OnError(Exception ex){
+        Log.d("RepocketSDK", "MainSocket - onError: " + ex.getMessage());
+
+        _peerCloseWithError = true;
+        SocketConnectionFailed.broadcast(ex);
+        OnClose();
+    }
+
     private void HandleRead(byte[] data) {
         String request = new String(data, StandardCharsets.UTF_8);
         String reqAsStr = request;
@@ -144,16 +170,12 @@ public class MainSocket {
                 Log.d("RepocketSDK","MainSocket -> HandleRead -> e:"+ e);
             }
             return;
-        }
-
-        if (isConnCompletedPacket) {
+        } else if (isConnCompletedPacket) {
             if (_onConnectionEstablishedEventFired) return;
             ConnectionEstablished.broadcast(_peerId);
             _onConnectionEstablishedEventFired = true;
             return;
-        }
-
-        if (isPingPacket) {
+        } else if (isPingPacket) {
             Log.d("RepocketSDK","MainSocket -> HandleRead: PING");
             byte[] pongData = PeerSocketEvents.Pong.getBytes(StandardCharsets.UTF_8);
             try {
@@ -162,9 +184,7 @@ public class MainSocket {
                 Log.d("RepocketSDK","MainSocket -> HandleRead -> e:"+ e);
             }
             return;
-        }
-
-        if (isAuthFailedPacket) {
+        } else if (isAuthFailedPacket) {
             Log.d("RepocketSDK","MainSocket -> HandleRead: Authentication Failed");
             OnMainSocketCloseWithError();
             return;
@@ -175,7 +195,7 @@ public class MainSocket {
 
         if (requests != null && requests.length > 0) {
             for (String reqId : requests) {
-                if (reqId.isEmpty()) continue;
+                if (reqId == null || reqId.isEmpty()) continue;
                 InitRequestSocketHandler(reqId);
             }
         }
@@ -214,6 +234,16 @@ public class MainSocket {
         } catch (IOException ex) {
             Log.d("RepocketSDK","MainSocket -> OnMainSocketCloseWithError: Main socket close error: " + ex.getMessage());
         }
+        OnClose();
+    }
+
+    private void OnMainSocketCloseWithErrorNoOnClose() {
+        _peerCloseWithError = true;
+        try {
+            _mainSocket.close();
+        } catch (IOException ex) {
+            Log.d("RepocketSDK","MainSocket -> OnMainSocketCloseWithError: Main socket close error: " + ex.getMessage());
+        }
     }
 
     private void ResetConnectionTimer_Elapsed() {
@@ -223,7 +253,7 @@ public class MainSocket {
             try {
                 _mainSocket.setTcpNoDelay(true);
             } catch (SocketException e) {
-                Log.d("RepocketSDK", "MainSocket -> ResetConnectionTimer_Elapsed -> setTcpNoDelay block -> e: " + e);
+                Log.d("RepocketSDK", "MainSocket -> ResetConnectionTimer_Elapsed -> setTcpNoDelay -> e: " + e);
             }
             _mainSocket.RetryConnectionCounter++;
             Log.d("RepocketSDK", "MainSocket -> ResetConnectionTimer_Elapsed -> before reconnect: " + _ip);
@@ -248,6 +278,6 @@ public class MainSocket {
 
     public void End() {
         Log.d("RepocketSDK","MainSocket -> End: Main socket destroy");
-        OnMainSocketCloseWithError();
+        OnMainSocketCloseWithErrorNoOnClose();
     }
 }

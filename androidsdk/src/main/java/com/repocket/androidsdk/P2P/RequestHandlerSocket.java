@@ -2,6 +2,7 @@ package com.repocket.androidsdk.P2P;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -29,6 +30,12 @@ public class RequestHandlerSocket {
 
     public EventHandler<String> TargetWebsiteError = new EventHandler<>();
     public EventHandler<String> SocketConnectionFailed = new EventHandler<>();
+
+    public void RemoveAllListeners()
+    {
+        TargetWebsiteError = null;
+        SocketConnectionFailed = null;
+    }
 
     public RequestHandlerSocket(String ip, int port, String reqId, String peerId) {
         _ip = ip;
@@ -92,9 +99,17 @@ public class RequestHandlerSocket {
                 Log.d("RepocketSDK", "RequestHandlerSocket -> ReceiveData -> closed - " + _reqId);
                 CloseSockets();
             }
-        } catch (IOException ex) {
+        }
+        catch (SocketException ex)
+        {
+            if (ex.getMessage().toLowerCase().contains("connection reset")) {
+                CloseSockets();
+            }
+        }
+        catch (IOException ex) {
             // Handle receive error
             Log.d("RepocketSDK", "RequestHandlerSocket -> ReceiveData -> error: " + ex.getMessage());
+            SocketConnectionFailed.broadcast(ex.getMessage());
             CloseSockets();
         }
     }
@@ -115,9 +130,7 @@ public class RequestHandlerSocket {
                 Log.d("RepocketSDK", "RequestHandlerSocket -> authPacket block -> IOException: " + e);
             }
             return;
-        }
-
-        if (remoteSocketClosePacket.equals(request)) {
+        } else if (remoteSocketClosePacket.equals(request)) {
             if (_targetSocket != null) {
                 try {
                     _targetSocket.socket.close();
@@ -143,6 +156,7 @@ public class RequestHandlerSocket {
             _socks5TargetSocket = new Socket5Handler(_socket, _port, _ip, "8.8.8.8"); // TODO: hardcoded DNS
             _socks5TargetSocket.handle(data);
         }
+        // Handle other cases
     }
 
     private void CloseSockets() {
@@ -150,9 +164,9 @@ public class RequestHandlerSocket {
             if (_socket != null) {
                 _socket.close();
             }
-            if (_targetSocket != null && _targetSocket.socket != null) {
-                _targetSocket.socket.close();
-            }
+//            if (_targetSocket != null && _targetSocket.socket != null) {
+//                _targetSocket.socket.close();
+//            }
         } catch (IOException ex) {
             // Handle close error
             Log.d("RepocketSDK", "RequestHandlerSocket -> CloseSockets -> Socket close error: " + ex.getMessage());

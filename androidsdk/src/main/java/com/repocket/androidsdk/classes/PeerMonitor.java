@@ -41,7 +41,7 @@ public class PeerMonitor {
                 public void run() {
                     monitorHandler(peerDeactivate, credentialsMissing, peerActive);
                 }
-            }, 0, TimeUnit.SECONDS.toMillis(rate));
+            }, 0, rate); //TimeUnit.SECONDS.toMillis(rate)
         }
     }
 

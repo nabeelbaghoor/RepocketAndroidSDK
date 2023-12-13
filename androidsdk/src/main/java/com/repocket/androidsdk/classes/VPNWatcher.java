@@ -6,7 +6,6 @@ import java.util.Enumeration;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 
@@ -26,21 +25,26 @@ public class VPNWatcher {
 
     public void start(Runnable onVpnActivated) {
         Log.d("RepocketSDK","VPNWatcher -> start");
-        if (!isRunning) {
+        if (timer == null) {
             isRunning = true;
 
-            TimerTask timerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    vpnIntervalHandler(() -> {
-                        onVpnActivated.run();
-                        return CompletableFuture.completedFuture(null);
-                    });
-                }
-            };
+//            TimerTask timerTask = new TimerTask() {
+//                @Override
+//                public void run() {
+//                    vpnIntervalHandler(() -> {
+//                        onVpnActivated.run();
+//                        return CompletableFuture.completedFuture(null);
+//                    });
+//                }
+//            };
 
             timer = new Timer();
-            timer.scheduleAtFixedRate(timerTask, 0, DURATION);
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    vpnIntervalHandler(onVpnActivated);
+                }
+            }, 0, DURATION);
         }
     }
 
@@ -53,11 +57,11 @@ public class VPNWatcher {
         }
     }
 
-    private void vpnIntervalHandler(Supplier<CompletableFuture<Void>> onVpnActivated) {
+    private void vpnIntervalHandler(Runnable onVpnActivated) {
         CompletableFuture<Boolean> isVpnConnect = isVpnActive();
         isVpnConnect.thenAccept(result -> {
             if (result) {
-                onVpnActivated.get();
+                onVpnActivated.run();
             }
         });
     }

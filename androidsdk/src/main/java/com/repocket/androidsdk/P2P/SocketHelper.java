@@ -9,6 +9,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
+// TODO: Not Implemented as Expected, Look into C#, and Typescript codebases
 public class SocketHelper {
     public static void writeToSocket(Socket socket, byte[] data) {
         try {
