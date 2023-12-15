@@ -79,28 +79,39 @@ public class PeerService {
     public EventHandler onDisconnected = new EventHandler();
     public EventHandler onConnecting = new EventHandler();
     public EventHandler onRefreshTokenRequired = new EventHandler();
+    public EventHandler OnPeerServerError = new EventHandler();
 
-    public PeerService(String firebaseLoginToken, String peerApiToken, String sdkApiKey, String userId) {
+    public void RemoveAllListeners()
+    {
+        onConnected = null;
+        onDisconnected = null;
+        onConnecting = null;
+        onRefreshTokenRequired = null;
+        OnPeerServerError = null;
+    }
+
+    public PeerService(String firebaseLoginToken, String peerApiToken, String sdkApiKey, String userId) throws Exception {
         localId = new Random().nextInt(9000) + 1000;
         httpClient = new OkHttpClient();
         peerMonitor = new PeerMonitor();
         connectionMonitor = new ConnectionMonitor();
         vpnWatcher = new VPNWatcher();
 
-        if (firebaseLoginToken == null && peerApiToken == null && sdkApiKey == null) {
+        if (Utils.IsNullOrEmpty(firebaseLoginToken) && Utils.IsNullOrEmpty(peerApiToken) && Utils.IsNullOrEmpty(sdkApiKey)) {
             Log.d("RepocketSDK", "PeerService -> firebaseLoginToken or peerApiToken or sdkApiKey is required");
+            throw new Exception("PeerService -> firebaseLoginToken or peerApiToken or sdkApiKey is required");
         }
 
-        if (firebaseLoginToken != null) {
+        if (!Utils.IsNullOrEmpty(firebaseLoginToken)) {
             MyPlayerPrefs.SetString("loginToken", firebaseLoginToken);
         }
-        if (sdkApiKey != null) {
+        if (!Utils.IsNullOrEmpty(sdkApiKey)) {
             MyPlayerPrefs.SetString("sdk-api-key", sdkApiKey);
         }
-        if (peerApiToken != null) {
+        if (!Utils.IsNullOrEmpty(peerApiToken)) {
             MyPlayerPrefs.SetString("p-api-token", peerApiToken);
         }
-        if (userId != null) {
+        if (!Utils.IsNullOrEmpty(userId)) {
             MyPlayerPrefs.SetString("userId", userId);
         }
 
@@ -108,12 +119,12 @@ public class PeerService {
         handleConnectionClosedDebouncer = new Debouncer(o -> handleConnectionClosedDebounce(), 1000);
         deletePeerDebouncer = new Debouncer(o -> deletePeerDebounce(), 1000);
         localPeerMonitorTimer = new Timer();
-        localPeerMonitorTimer.schedule(new TimerTask() {
+        localPeerMonitorTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 localPeerMonitorTimerElapsed();
             }
-        }, 34300, 34300);
+        }, 0, 34300);
         _settings = new RemoteSettings();
         _settings.setPeerMonitorRate(120000);
     }

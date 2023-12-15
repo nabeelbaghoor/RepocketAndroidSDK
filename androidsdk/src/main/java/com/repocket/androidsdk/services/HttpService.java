@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.repocket.androidsdk.shared.Global;
 import com.repocket.androidsdk.shared.MyPlayerPrefs;
+import com.repocket.androidsdk.shared.Utils;
 import com.repocket.androidsdk.types.Types;
 
 import org.json.JSONException;
@@ -103,10 +104,10 @@ public class HttpService {
 
         runtimeInfo = Global.GetRuntimeInfo();
 
-        if (!isEmpty(accessToken) || !isEmpty(peerToken) || !isEmpty(sdkApiKey)) {
-            if (!isEmpty(accessToken)) requestBuilder.header("auth-token", accessToken);
-            if (!isEmpty(peerToken)) requestBuilder.header("p-auth-token", peerToken);
-            if (!isEmpty(sdkApiKey)) {
+        if (!Utils.IsNullOrEmpty(accessToken) || !Utils.IsNullOrEmpty(peerToken) || !Utils.IsNullOrEmpty(sdkApiKey)) {
+            if (!Utils.IsNullOrEmpty(accessToken)) requestBuilder.header("auth-token", accessToken);
+            if (!Utils.IsNullOrEmpty(peerToken)) requestBuilder.header("p-auth-token", peerToken);
+            if (!Utils.IsNullOrEmpty(sdkApiKey)) {
                 requestBuilder.header("api-key", sdkApiKey);
                 requestBuilder.header("x-sdk-version", runtimeInfo.AppVersion);
             }
@@ -125,6 +126,7 @@ public class HttpService {
         }
     }
 
+    // TODO: call handleResponseAsync, handleErrorAsync when needed inside it
     private Response handleResponse(Request request) {
         Response response = null;
         try {
@@ -179,10 +181,6 @@ public class HttpService {
                 // Handle error
             }
         }
-    }
-
-    private boolean isEmpty(String str) {
-        return str == null || str.trim().isEmpty();
     }
 }
 

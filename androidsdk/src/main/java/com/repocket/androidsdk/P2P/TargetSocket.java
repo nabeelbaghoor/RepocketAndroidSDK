@@ -23,6 +23,11 @@ public class TargetSocket {
     public Socket socket;
     public EventHandler<Exception> targetWebsiteError = new EventHandler<>();
 
+    void RemoveAllListeners()
+    {
+        targetWebsiteError = null;
+    }
+
     public TargetSocket(Socket requestHandlerSocket, Map<String, Object> request, byte[] buffer) {
         this.requestHandlerSocket = requestHandlerSocket;
         this.request = request;
@@ -38,7 +43,7 @@ public class TargetSocket {
         try {
             socket = new Socket();
             socket.connect(new InetSocketAddress(request.get("host").toString(), port));
-            socket.setSoTimeout(0);
+            socket.setSoTimeout(30000); // TODO: was 0, was 10
             socket.setTcpNoDelay(true);
 
             Runnable runnable = () -> ReceiveData();
@@ -131,10 +136,11 @@ public class TargetSocket {
     private void onError(Exception error) {
         Log.d("RepocketSDK","TargetSocket -> onError -> Error receiving data from target socket: " + error);
         targetWebsiteError.broadcast(error);
-        try {
-            socket.close();
-        } catch (IOException e) {
-            Log.d("RepocketSDK", "TargetSocket -> onError -> IOException: " + e);
-        }
+        close();
+//        try {
+//            socket.close();
+//        } catch (IOException e) {
+//            Log.d("RepocketSDK", "TargetSocket -> onError -> IOException: " + e);
+//        }
     }
 }

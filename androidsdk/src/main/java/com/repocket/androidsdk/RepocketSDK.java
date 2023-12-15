@@ -26,7 +26,12 @@ public class RepocketSDK {
         _sdkApiKey = sdkApiKey;
         MyPlayerPrefs.SetString("sdk-api-key", sdkApiKey);
 
-        _peerService = new PeerService(null,null,_sdkApiKey, null);
+        try {
+            _peerService = new PeerService(null,null,_sdkApiKey, null);
+        } catch (Exception e) {
+            Log.d("RepocketSDK", "RepocketSDK -> Initialize -> Exception: " + e.getMessage());
+            // TODO:
+        }
         _peerService.onConnected.addListener(x -> Log.d("RepocketSDK","RepocketSDK -> Initialize -> peer connected: " + x));
         _peerService.onConnecting.addListener(x -> Log.d("RepocketSDK","RepocketSDK -> Initialize -> peer resetting: " + x));
         _peerService.onDisconnected.addListener(x -> Log.d("RepocketSDK","RepocketSDK -> Initialize -> peer disconnected: " + x));

@@ -221,7 +221,7 @@ public class RequestHandlerSocket {
         try {
             Map<String, String> httpRequest = new HashMap<>();
             if (data.contains("HTTP/1.0")) {
-                String[] splitted = data.split(" |\r|\n");
+                String[] splitted = data.split(" "); // data.split(" |\r|\n");
                 httpRequest.put("method", splitted[0]);
                 httpRequest.put("path", splitted[1].split(":")[0]);
                 httpRequest.put("httpVersion", splitted[2].split("\r")[0]);
@@ -235,7 +235,7 @@ public class RequestHandlerSocket {
                 httpRequest.put("httpVersion", firstLine[2]);
                 int index = -1;
                 for (int i = 0; i < splitted.length; i++) {
-                    if (splitted[i].toLowerCase().startsWith("host: ")) {
+                    if (splitted[i].toLowerCase().contains("host:") && splitted[i].toLowerCase().startsWith("host: ")) {
                         index = i;
                         break;
                     }

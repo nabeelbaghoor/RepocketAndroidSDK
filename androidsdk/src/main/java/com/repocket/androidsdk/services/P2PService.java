@@ -30,12 +30,12 @@ public class P2PService {
         this.token = token;
 
         retriesInterval = new Timer();
-        retriesInterval.schedule(new TimerTask() {
+        retriesInterval.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 retriesConnectionCounter = 0;
             }
-        }, 1000 * 60 * 60, 1000 * 60 * 60);
+        },0, 1000 * 60 * 60);
     }
 
     public EventHandler ConnectionEstablished = new EventHandler();
@@ -88,6 +88,7 @@ public class P2PService {
         }
 
         try {
+            // TODO: It blocks the caller function, review again?
             Thread.sleep(1000 * 10);
         } catch (InterruptedException e) {
             e.printStackTrace();

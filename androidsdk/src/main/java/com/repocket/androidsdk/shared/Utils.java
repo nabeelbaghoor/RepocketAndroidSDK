@@ -201,4 +201,8 @@ public class Utils {
     public static <T> T fromJson(String json, Class<T> classOfT) {
         return gson.fromJson(json, classOfT);
     }
+
+    public static boolean IsNullOrEmpty(String str){
+        return str == null || str.isEmpty();
+    }
 }
