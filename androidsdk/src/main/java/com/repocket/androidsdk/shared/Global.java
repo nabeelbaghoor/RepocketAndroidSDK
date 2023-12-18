@@ -4,6 +4,10 @@ import com.repocket.androidsdk.types.Types;
 
 public class Global {
     private static Types.RuntimeInfo _runtimeInfo;
+    public static String SdkVersion = "android_sdk_1.1";
+    public static Boolean IsSdk = true;
+    public static String GrafanaLokiServerUrl = "http://51.159.149.175:3100"; // Address to local or remote Loki server
+
 
     private static final Types.Config Dev = new Types.Config() {{
         Env = "development";

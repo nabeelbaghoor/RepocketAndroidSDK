@@ -11,6 +11,7 @@ import com.repocket.androidsdk.classes.VPNWatcher;
 import com.repocket.androidsdk.shared.Callback;
 import com.repocket.androidsdk.shared.Debouncer;
 import com.repocket.androidsdk.shared.EventHandler;
+import com.repocket.androidsdk.shared.Global;
 import com.repocket.androidsdk.shared.MyPlayerPrefs;
 import com.repocket.androidsdk.shared.Utils;
 import com.repocket.androidsdk.types.Types;
@@ -175,12 +176,15 @@ public class PeerService {
                     put("buildNumber", deviceInfo.buildNumber);
                     put("connectivityType", deviceInfo.connectivityType);
                     put("os", deviceInfo.os);
-                    put("is_sdk", true);
-                    put("sdk_version", "android_sdk_1.0");
+                    put("is_sdk", Global.IsSdk);
+                    put("sdk_version", Global.SdkVersion);
                 }});
             }});
 
             if (response.isSuccessful()) {
+                Log.d("RepocketSDK", "PeerService(" + localId + ") - creating peer response: HttpStatusCode(" +
+                        response.code() + ")");
+
                 String json = null;
                 try {
                     json = response.body().string();
@@ -190,6 +194,8 @@ public class PeerService {
                 Types.CreatePeerResponse createPeer = Utils.fromJson(json, Types.CreatePeerResponse.class);
 
                 peerId = createPeer != null ? createPeer.data._id : null;
+                MyPlayerPrefs.SetString("peerId", peerId); // For Server Logging Filtering
+
                 String token = createPeer != null ? createPeer.data.token : null;
                 tcpServerInfo = createPeer != null ? createPeer.data.tcpServerInfo : null;
 
@@ -197,7 +203,7 @@ public class PeerService {
                 Log.d("RepocketSDK", "PeerService -> createPeer -> _tcpServerInfo?.port: " + (tcpServerInfo != null ? tcpServerInfo.port : ""));
                 Log.d("RepocketSDK", "_PeerService -> createPeer -> tcpServerInfo?.socketReqHandlerPort: " + (tcpServerInfo != null ? tcpServerInfo.socketReqHandlerPort : ""));
 
-                if (userId == null || userId.isEmpty()) {
+                if (Utils.IsNullOrEmpty(userId)) {
                     userId = createPeer.data.userId;
                     MyPlayerPrefs.SetString("userId", userId != null ? userId : "");
                 }
@@ -257,14 +263,16 @@ public class PeerService {
             response = httpClient.newCall(request).execute();
             String responseData = response.body().string();
 
-            if (response.isSuccessful()) {
+            if (response.code() == 200) {
                 return Utils.fromJson(responseData, Types.IpInfo.class);
             } else {
                 Log.d("RepocketSDK", "PeerService -> getIpInfo -> Something went wrong");
                 return null;
             }
         } catch (IOException e) {
-            Log.d("RepocketSDK", "PeerService -> getIpInfo -> IOException: " + e);
+            Log.d("RepocketSDK", "PeerService -> getIpInfo -> IOException: " + e.getMessage());
+        } catch (Exception e){
+            Log.d("RepocketSDK", "PeerService -> getIpInfo -> Exception: " + e.getMessage());
         }
 
         return null;
@@ -279,7 +287,16 @@ public class PeerService {
         stop(false);
         onConnecting.broadcast(null);
 
-        new Handler(Looper.getMainLooper()).postDelayed(() -> createPeer(), 3000);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            try
+            {
+                createPeer();
+            }
+            catch (Exception ex)
+            {
+                Log.d("RepocketSDK",ex.getMessage());
+            }
+        }, 3000);
         new Handler(Looper.getMainLooper()).postDelayed(() -> isResettingPeer = false, 5000);
     }
 
@@ -347,21 +364,31 @@ public class PeerService {
     private void _markPeerAsAlive() {
         Log.d("RepocketSDK", "PeerService -> markPeerAsAlive -> start - " + peerId);
         Response response = null;
-        response = Services.PeerManagerApiService.Post("peer/markPeerAsAlive", new HashMap<String, Object>() {{
-            put("peerId", peerId);
-        }});
-        boolean isAlive = response.code() == 200;
-        if (isAlive) {
-            Log.d("RepocketSDK", "PeerService -> _markPeerAsAlive -> markPeerAsAlive -> isAlive");
-            isPeerActive = true;
-            onConnected.broadcast("");
-            enabledLocalMonitor = true;
-            startPeerMonitor();
-            startConnectionMonitor();
-            startVpnWatcher();
-        } else if (response.code() == 403) {
-            Log.d("RepocketSDK", "PeerService -> _markPeerAsAlive -> Error happened: HttpStatusCode(" + response.code() + ")");
-            onRefreshTokenRequired.broadcast("_markPeerAsAlive -> Error happened: HttpStatusCode(" + response.code() + ")");
+        try {
+            response = Services.PeerManagerApiService.Post("peer/markPeerAsAlive", new HashMap<String, Object>() {{
+                put("peerId", peerId);
+            }});
+            boolean isAlive = response.code() == 200;
+            if (isAlive) {
+                Log.d("RepocketSDK", "PeerService -> _markPeerAsAlive -> markPeerAsAlive -> isAlive");
+                isPeerActive = true;
+                onConnected.broadcast("");
+//            enabledLocalMonitor = true; // TODO: Check NodeJS SDK, Incorrect?
+                isUserActivatedThePeer = true;
+                startPeerMonitor();
+                startConnectionMonitor();
+                startVpnWatcher();
+            } else {
+                Log.d("RepocketSDK", "PeerService -> _markPeerAsAlive -> Error happened: HttpStatusCode(" + response.code() + "): " + response.body().string());
+                if (response.code() == 403 || response.code() == 401) {
+                    onRefreshTokenRequired.broadcast("_markPeerAsAlive -> Error happened: HttpStatusCode(" + response.code() + ")");
+                }
+            }
+        } catch (Exception e) {
+            Log.d("RepocketSDK", "PeerService -> _markPeerAsAlive -> Error happened: HttpStatusCode(" + response.code() + ")"); // TODO: Correct?
+            if (response.code() == 403 || response.code() == 401) {
+                onRefreshTokenRequired.broadcast("_markPeerAsAlive -> Error happened: HttpStatusCode(" + response.code() + ")");
+            }
         }
     }
 
@@ -498,7 +525,7 @@ public class PeerService {
      */
     public void stop(boolean keepConnectionMonitor) {
         Log.d("RepocketSDK", "PeerService(" + localId + ") -> stop");
-        if (peerId != null) {
+        if (!Utils.IsNullOrEmpty(peerId)) {
             peerMonitor.stop();
             if (!keepConnectionMonitor) {
                 connectionMonitor.stop();
