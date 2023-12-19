@@ -133,6 +133,10 @@ public class HttpService {
             response = httpClient.newCall(request).execute();
         } catch (IOException e) {
             Log.d("RepocketSDK", "HttpService -> handleResponse -> IOException: " + e);
+
+            // TODO: Look into this
+//            Log.d("RepocketSDK", "HttpService -> handleResponse -> Retrying...");
+//            handleResponse(request);
         }
 //        String responseBody = response.body().string();
 //
